@@ -1,0 +1,49 @@
+package Waypoint
+
+import LinkedList
+import Periodic
+
+function unit.waypoint() returns Waypoint
+    return new Waypoint(this)
+
+class Path
+    vec2 pos
+    construct(vec2 v)
+        pos = v
+
+public class Waypoint extends Periodic
+    unit u
+    boolean inprogress = false 
+    LinkedList<Path> path
+    Path current
+
+    construct(unit toPatrol)
+        u = toPatrol
+        path = new LinkedList<Path>()
+
+    function addPoint(vec2 pos)
+        Path p = new Path(pos)
+        path.add(p)
+
+    function addPath(LinkedList<Path> l)
+        path = l
+
+    function getPath() returns LinkedList<Path>
+        return path
+
+    override function onLoop()
+        if(inprogress)
+            if u.getPos().distanceTo(current.pos) < 50
+                current = path.get(path.indexOf(current) + 1)
+                if(current != null)
+                    u.issuePointOrder("move", current.pos)
+                else
+                    destroy this
+
+    ondestroy
+        destroy path
+
+    function start()
+        current = path.getFirst()
+        u.issuePointOrder("move", current.pos)
+        inprogress = true

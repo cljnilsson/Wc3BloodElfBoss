@@ -1,0 +1,57 @@
+package scene
+
+import TimerUtils
+import cinemaHelpers
+import LinkedListModule
+
+@configureable boolean autoStart = true //Automatically starts the next scene, leave true if you only have a single cinematic with multiple scenes.
+
+trigger t = CreateTrigger()
+
+function boolexpr.callback()
+    TriggerClearConditions(t)
+    TriggerAddCondition(t, this)
+    TriggerEvaluate(t)
+
+public class Scene
+    use LinkedListModule
+    integer counter = 1
+    boolexpr action
+    timer time
+
+    static thistype current
+
+    construct(code onStart)
+        action = Condition(onStart)
+
+    construct(boolexpr onStart)
+        action = onStart
+
+    function start()
+        current = this
+
+        time = CreateTimer()
+        time.setData(this castTo integer)
+        time.start(0, function onStart)
+
+    static function onStart()
+        timer t = GetExpiredTimer()
+        real duration
+        thistype instance = t.getData() castTo thistype
+        instance.action.callback()
+        instance.counter++
+        duration = lastSound.length()
+
+        instance.time = t
+        instance.time.start(duration, function onStart)
+
+    ondestroy
+        time.destr()
+        if(autoStart and next != null)
+            getTimer()
+            ..setData(this.next castTo int)
+            ..start(1, () -> begin
+                timer t = GetExpiredTimer()
+                t.getData() castTo thistype .start()
+                t.release()
+            end)

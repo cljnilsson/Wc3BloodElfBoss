@@ -1,0 +1,7 @@
+package Start
+
+import RealisticPrint
+
+init
+	RealisticPrint.log("Silvermoon, during Arthas' invasion")
+	//panCameraToTimed(hero.getPos(), 0)

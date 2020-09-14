@@ -1,0 +1,17 @@
+package Periodic
+
+import public LinkedListModule
+
+public abstract class Periodic
+	use LinkedListModule
+	construct()
+		CreateTimer()
+		..startPeriodic(0.03, function Periodic.onLoopCallback)
+
+	static function onLoopCallback()
+		thistype current = first
+		while current != null
+			current.onLoop()
+			current = current.next
+
+	abstract function onLoop()

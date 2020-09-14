@@ -1,0 +1,48 @@
+package setup
+
+import Dialogue
+import Talk
+import generate
+
+Dialogue array dialogues
+unit death
+unit p
+
+function giveItem()
+	/*Dialogue d = getTriggeredDialogue()
+	player p   = getTriggeringOptionPlayer()
+	unit u     = d.getStarterUnit(p)
+
+	u.addItemById('bgst')*/
+	
+function unlockQOne()
+	dialogues[1].addOptionFirst("How do I remember my name?").linkTextReply("I take, and I give. If you assist me, I'll give you a few hints.", 2.5)
+
+init
+	//Unit Preperation
+	/*unit questNPC = death
+
+	p.addAbility(testAbility)
+
+	// Dialogue setup
+	dialogues[0] = new Dialogue(questNPC)
+	dialogues[1] = new Dialogue(questNPC)
+	dialogues[2] = new Dialogue(questNPC)
+	dialogues[3] = new Dialogue(questNPC)
+
+	dialogues[0].addOption("Temp").linkTextReply("Dues vult, brother. Here is a free item, check your inventory.", 4).callback(function giveItem)
+	dialogues[0].addOption("I have a question").linkDialogue(dialogues[1])
+	dialogues[0].addOption("Goodbye").makeQuit()
+
+	dialogues[1].addOption("Where am I?").linkTextReply("In my domain. Do you want to get back to where you came from?", 3).linkDialogue(dialogues[2])
+	dialogues[1].addOption("Who are you?").linkTextReply("Wouldn't you like to know?", 2)
+	dialogues[1].addOption("Back").linkDialogue(dialogues[0])
+
+	dialogues[2].addOption("Yes").linkTextReply("Good, good. However I cannot let you back until you remember your name.", 1.5).linkDialogue(dialogues[3]).callback(function unlockQOne)
+	dialogues[2].addOption("No").linkTextReply("No? how amusing.", 1.5).linkDialogue(dialogues[1])
+
+	dialogues[3].addOption("How do I remember my name?").linkTextReply("I take, and I give. If you assist me, I'll give you a few hints.", 2.5).linkDialogue(dialogues[1])
+	dialogues[3].addOption("Back").linkDialogue(dialogues[1])
+
+	// Optional for demo
+	setupQuestGiver(dialogues[0])*/

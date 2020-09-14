@@ -1,0 +1,48 @@
+package camera
+
+player localPlayer = GetLocalPlayer()
+
+function player.isLocalPlayer() returns boolean
+    return this == localPlayer
+    
+public class camera
+    static function pan(player p, vec2 target, real duration)
+        if(p.isLocalPlayer())
+            PanCameraToTimed(target.x, target.y, duration)
+
+    static function pan(player p, vec2 target)
+        if(p.isLocalPlayer())
+            PanCameraTo(target.x, target.y)
+        
+    static function stop(player p)
+        if(p.isLocalPlayer())
+            StopCamera()
+
+    static function rotate(player p, vec2 target, real degrees, real duration)
+        if(p.isLocalPlayer())
+            SetCameraRotateMode(target.x, target.y, bj_DEGTORAD * degrees, duration)
+
+    static function rotate(vec2 target, real degrees, real duration)
+        if(players[0].isLocalPlayer())
+            SetCameraRotateMode(target.x, target.y, bj_DEGTORAD * degrees, duration)
+    
+    static function setSmoothing(real value)
+        CameraSetSmoothingFactor(value)
+
+    static function resetSmoothing()
+        CameraSetSmoothingFactor(0)
+
+    static function shake(player p, real value)
+        real richter = value > 5 ? 5 : (value < 2 ? 2 : value)
+        if(p.isLocalPlayer())
+            CameraSetTargetNoiseEx(value * 2.0, value * Pow(10,richter),true)
+            CameraSetSourceNoiseEx(value * 2.0, value * Pow(10,richter),true)
+
+    static function sway(player p, real magnitude, real velocity)
+        if(p.isLocalPlayer())
+            CameraSetSourceNoise(magnitude, velocity)
+
+    static function stopNoise(player p)
+        if(p.isLocalPlayer())
+            CameraSetSourceNoise(0, 0)
+            CameraSetTargetNoise(0, 0)

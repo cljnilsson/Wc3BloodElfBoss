@@ -1,0 +1,170 @@
+package Dialogue
+
+import LinkedList
+import Table
+
+@configurable
+string selectColor = "|c00FFFFFF"
+string defaultColor = "|c007d7d7d"
+string numberColor = "|c00FFFF00"
+
+integer allowedRows = 6
+
+@endconfigurable
+
+public Dialogue array dialogues
+public Option triggeredOption
+public player triggeringPlayer
+
+public function getTriggeredOption() returns Option
+    return triggeredOption
+
+public function getTriggeringOptionPlayer() returns player
+    return triggeringPlayer
+
+public function getTriggeredDialogue() returns Dialogue
+    return triggeredOption.parent
+
+public function transmission(unit u, player target, string text, real dur)
+    TransmissionFromUnitWithNameBJ(bj_FORCE_PLAYER[target.getId()], u, GetUnitName(u), null, text, bj_TIMETYPE_SET, dur, false)
+
+function transmission(unit u, LinkedList<player> target, string text, real dur)
+    force f = CreateForce()
+    for player p in target
+        f.addPlayer(p)
+    TransmissionFromUnitWithNameBJ(f, u, GetUnitName(u), null, text, bj_TIMETYPE_SET, dur, false)
+    f.destr()
+
+function unit.transmission(LinkedList<player> target, string text, real dur)
+    transmission(this, target, text, dur)
+
+public function unit.transmission(player target, string text, real dur)
+    transmission(this, target, text, dur)
+
+public class Option 
+    string text
+    string resp
+    real respDuration
+    boolean quit = false
+    boolexpr cb
+
+    Dialogue dialogue
+    Dialogue parent
+
+    construct(Dialogue parent, string text)
+        this.text = text
+        this.parent = parent
+
+    function linkTextReply(string s, real duration) returns thistype
+        resp = s
+        respDuration = duration
+        return this
+
+    function linkDialogue(Dialogue d) returns thistype
+        dialogue = d
+        return this
+       
+    function makeQuit() returns thistype
+        quit = true
+        return this
+
+    function callback(code c) returns thistype
+        cb = Condition(c)
+        return this
+
+public class Dialogue
+    Table hash = new Table() //used to contain player specific data
+
+    LinkedList<Option> options = new LinkedList<Option>()
+    LinkedList<player> users = new LinkedList<player>()
+
+    unit target
+
+    thistype prev
+
+    construct(unit u)
+        target = u
+
+    function getStarterUnit(integer i) returns unit
+        return hash.loadUnit(i)
+
+    function getStarterUnit(player p) returns unit
+        return getStarterUnit(p.getId())
+    
+    function setStartUnit(player p, unit u)
+        setStartUnit(p.getId(), u)
+
+    function setStartUnit(integer id, unit u)
+        hash.saveUnit(id, u)
+
+    function addOption(string text) returns Option
+        let o = new Option(this, text)
+        options.add(o)
+		return o
+
+	function addOptionFirst(string text) returns Option
+		let o = new Option(this, text)
+		options.addtoStart(o)
+		return o
+
+    function addPlayer(player p)
+        addPlayer(p, null)
+
+    function addPlayer(player p, unit u)
+        integer id = p.getId()
+
+        if(u != null)
+            setStartUnit(id, u)
+
+        users.push(p)
+        dialogues[id] = this
+        CinematicModeBJ(true, bj_FORCE_PLAYER[id])
+        SetUserControlForceOn(bj_FORCE_PLAYER[id])
+        transmission(u, p, toString(p), 9999)
+        SetCameraTargetControllerNoZForPlayer(p, target, 0, 0, true)
+
+    function swapTo(thistype d, player p)
+        integer id = p.getId()
+        unit origin = hash.loadUnit(id)
+
+        users.remove(p)
+        dialogues[id] = d
+
+        d.users.push(p)
+        d.hash.saveUnit(id, origin)
+        transmission(origin, p, d.toString(p), 9999)
+        SetCameraTargetControllerNoZForPlayer(p, d.target, 0, 0, true)
+
+    function swapTo(thistype d, player p, boolean forward)
+        if(forward)
+            d.prev = this
+
+        this.swapTo(d, p)
+
+    function removePlayer(player p)
+        users.remove(p)
+        dialogues[p.getId()] = null
+        CinematicModeBJ(false, bj_FORCE_PLAYER[p.getId()])
+        hash.flush()
+
+    function toString(player p) returns string
+        string toReturn = ""
+        integer selection = hash.loadInt(p.getId())
+        int i = options.size() > 5 ? selection : 0
+        int endLoop =  i + allowedRows >= options.size() and options.size() >= allowedRows ? i + allowedRows : options.size()
+        while i < endLoop
+            if i >= this.options.size()
+                toReturn += numberColor + (i - options.size() + 1).toString() + "|r. " + (i == selection ? selectColor + options.get(i - options.size()).text + "|r" : defaultColor + options.get(i - options.size()).text + "|r") + "\n"
+            else
+                toReturn += numberColor + (i + 1).toString() + "|r. " + (i == selection ? selectColor + options.get(i).text + "|r" : defaultColor + options.get(i).text) + "|r\n"
+            i++
+        return toReturn
+
+function disableTransmissionSkip()
+    if bj_cineSceneBeingSkipped == null
+        TryInitCinematicBehaviorBJ()
+   
+    DisableTrigger(bj_cineSceneBeingSkipped)
+
+init
+    disableTransmissionSkip()

@@ -1,0 +1,120 @@
+package cinema
+
+import TimerUtils
+import cinemaHelpers
+import Colors
+
+force f = bj_FORCE_PLAYER[0] //Defaults to only work on player 1
+
+public colorA lastFilter = COLOR_BLACK
+
+public enum Sky
+    blizzard
+    dalaran
+    felwood
+    foggy
+    genetic
+    fall
+    summer
+    winter
+    outland
+
+
+public enum Filter
+    dark
+    day
+    fall
+
+function Filter.convert() returns colorA
+    colorA toReturn
+    switch this
+        case Filter.dark
+            toReturn = colorA(20, 20, 20, 50)
+        case Filter.day
+            toReturn = colorA(65, 65, 65, 50)
+        case Filter.fall
+			toReturn = colorA(100, 60, 20, 90)
+
+    lastFilter = toReturn
+    return toReturn
+
+function Sky.toString() returns string
+    string toReturn
+    switch this
+        case Sky.blizzard
+            toReturn = "Environment\\Sky\\BlizzardSky\\BlizzardSky.mdl"
+        case Sky.dalaran
+            toReturn = "Environment\\Sky\\DalaranSky\\DalaranSky.mdl"
+        case Sky.felwood
+            toReturn = "Environment\\Sky\\FelwoodSky\\FelwoodSky.mdl"
+        case Sky.foggy
+            toReturn = "Environment\\Sky\\FoggedSky\\FoggedSky.mdl"
+        case Sky.genetic
+            toReturn = "Environment\\Sky\\Sky\\SkyLight.mdl"
+        case Sky.fall
+            toReturn = "Environment\\Sky\\LordaeronFallSky\\LordaeronFallSky.mdl"
+        case Sky.summer
+            toReturn = "Environment\\Sky\\LordaeronSummerSky\\LordaeronSummerSky.mdl"
+        case Sky.winter
+            toReturn = "Environment\\Sky\\LordaeronWinterSky\\LordaeronWinterSky.mdl"
+        case Sky.outland
+            toReturn = "Environment\\Sky\\Outland_Sky\\Outland_Sky.mdl"
+
+    return toReturn
+        
+public class cinema
+    static function setSky(Sky sky)
+        SetSkyModel(sky.toString())
+
+    static function forceSubtitles()
+        ForceCinematicSubtitles(true)
+
+    static function on()
+        CinematicModeExBJ(true, f, bj_CINEMODE_INTERFACEFADE)
+
+    static function off()
+        CinematicModeExBJ(false, f, bj_CINEMODE_INTERFACEFADE)
+
+    static function fadeIn(real duration)
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, duration, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+
+    static function fadeIn(real duration, Filter f)
+        colorA color = f.convert()
+
+        CinematicFilterGenericBJ(duration, BLEND_MODE_MODULATE_2X, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0, color.red.toReal(), color.green.toReal(), color.blue.toReal(), color.alpha.toReal() )
+
+    static function fadeIn(real duration, colorA color)
+
+        CinematicFilterGenericBJ(duration, BLEND_MODE_MODULATE_2X, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0, color.red.toReal(), color.green.toReal(), color.blue.toReal(), color.alpha.toReal() )
+
+    static function fadeOut(real duration)
+        CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, duration, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+
+    static function userControllOn()
+        if (IsPlayerInForce(GetLocalPlayer(),f))
+            EnableUserControl(true)
+
+    static function userControllOff()
+        if (IsPlayerInForce(GetLocalPlayer(),f))
+            EnableUserControl(false)
+
+    static function occlusionOn()
+        if (IsPlayerInForce(GetLocalPlayer(), f))
+            EnableOcclusion(true)
+
+    static function occlusionOff()
+        if (IsPlayerInForce(GetLocalPlayer(), f))
+                EnableOcclusion(false)
+
+    static function flashLightning()
+        CinematicFadeBJ( bj_CINEFADETYPE_FADEOUTIN, 0.12, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 100.00, 100.00, 100.00, 5.00 )
+        getTimer()
+        ..start(0.2, () -> begin
+            CinematicFadeBJ( bj_CINEFADETYPE_FADEOUTIN, 0.12, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 100.00, 100.00, 100.00, 5.00 )
+            GetExpiredTimer().destr()
+            getTimer()
+            ..start(0.2, () -> begin
+                fadeIn(0, lastFilter)
+                gg_snd_RollingThunder1.start()
+            end)
+        end)

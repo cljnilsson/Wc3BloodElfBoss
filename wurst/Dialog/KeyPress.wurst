@@ -1,0 +1,102 @@
+package KeyPress
+
+import Dialogue
+import TimerUtils
+import ClosureTimers
+
+trigger callback
+enum Key
+    up
+    down
+    right
+    left
+    invalid
+
+function boolexpr.execute()
+    TriggerClearConditions(callback)
+    TriggerAddCondition(callback, this)
+    TriggerEvaluate(callback)
+
+function eventid.toKey() returns Key
+    Key toReturn = invalid
+    if this == ConvertPlayerEvent(267)
+        toReturn = up
+    else if this == ConvertPlayerEvent(265)
+        toReturn = down
+    else if this == ConvertPlayerEvent(263)
+        toReturn = right
+    else if this == ConvertPlayerEvent(261)
+        toReturn = left
+    return toReturn
+
+function trigger.regKeyEventForPlayers(integer id)
+    int i = 0
+    while i < bj_MAX_PLAYERS
+        TriggerRegisterPlayerKeyEventBJ(this, players[i], bj_KEYEVENTTYPE_DEPRESS, id)
+        i++
+
+function unit.makeResponse(player target, string msg, real duration)
+    this.transmission(target, msg, duration)
+    CreateTimer()
+    ..setData(target.getId())
+    ..start(duration) ->
+        timer t = GetExpiredTimer()
+        integer id = t.getData()
+        Dialogue d = dialogues[id]
+        transmission(getOrigin(d, players[id]), players[id], d.toString(players[id]), 999)
+        t.release()
+
+function getOrigin(Dialogue d, player p) returns unit
+    return d.hash.loadUnit(p.getId())
+
+function getSelection(Dialogue d, player p) returns integer
+    return d.hash.loadInt(p.getId())
+
+init
+    callback = CreateTrigger()
+    CreateTrigger()
+    ..regKeyEventForPlayers(bj_KEYEVENTKEY_UP)
+    ..regKeyEventForPlayers(bj_KEYEVENTKEY_DOWN)
+    ..regKeyEventForPlayers(bj_KEYEVENTKEY_RIGHT)
+    ..regKeyEventForPlayers(bj_KEYEVENTKEY_LEFT)
+    ..addAction() ->
+
+        eventid id = GetTriggerEventId()
+        player p = GetTriggerPlayer()
+        Dialogue d = dialogues[GetPlayerId(p)]
+
+        if(d != null)
+            integer selection = getSelection(d, p)
+
+            switch id.toKey()
+                case up
+                    selection  = selection <= 0 ? d.options.size() -1 : selection - 1
+                    d.hash.saveInt(p.getId(), selection)
+                    transmission(getOrigin(d, p), p, d.toString(p), 999)
+
+                case down
+                    selection = selection >= d.options.size() -1 ? 0 : selection + 1
+                    d.hash.saveInt(p.getId(), selection)
+                    transmission(getOrigin(d, p), p, d.toString(p), 999)
+
+                case right
+                    Option o = d.options.get(selection)
+                    triggeredOption = o
+                    triggeringPlayer = p
+                    o.cb.execute()
+                    if(o.resp != null and o.resp != "")
+						d.target.makeResponse(p, o.resp, o.respDuration)
+						if o.dialogue != null
+							doAfter(o.respDuration) () ->
+								d.swapTo(o.dialogue, p, true)
+								
+                    else if o.quit
+                        d.removePlayer(p)
+
+                    else if o.dialogue != null
+                        d.swapTo(o.dialogue, p, true)
+                case left
+                    if(d.prev != null)
+                        d.swapTo(d.prev, p, false)
+                case invalid
+                    print("Error") //Should never happen

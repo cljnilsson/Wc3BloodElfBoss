@@ -1,0 +1,83 @@
+package Teleport
+
+import ClosureTimers
+import HashMap
+
+class Teleport
+
+	CallbackPeriodic initial
+	CallbackPeriodic reverse
+
+	unit tportal
+	unit fportal
+
+	static let hash = new HashMap<CallbackPeriodic, boolean>()
+
+	construct(unit f, unit t)
+		fportal = f
+		tportal = t
+		
+		initial = setupPortal(f.getPos(), t.getPos())
+		reverse = setupPortal(t.getPos(), f.getPos())
+		enable()
+
+	construct(vec2 f, vec2 t)
+		initial = setupPortal(f, t)
+		reverse = setupPortal(t, f)
+
+	static function filter() returns boolean
+		return GetFilterUnit().getOwner() == players[0]
+
+	function setupPortal(vec2 f, vec2 t) returns CallbackPeriodic
+		let cb =  doPeriodically(0.03) (CallbackPeriodic cb) ->
+			let enabled = hash.get(cb)
+			if enabled
+				group g = CreateGroup()
+				g.enumUnitsInRange(f, 100, Filter(function filter))
+
+				for unit u in g
+					u.setPos(t.polarOffset(GetRandomInt(0, 360).asAngleRadians(), 150))
+					players[0].panCameraToTimed(u.getPos(), 0)
+				
+				g.destr()
+
+		hash.put(cb, true)
+
+		return cb
+
+
+	function enable()
+		hash.put(initial, true)
+		hash.put(reverse, true)
+
+		if tportal != null and fportal != null
+			fportal.setColor((6).toPlayerColor())
+			tportal.setColor((6).toPlayerColor())
+
+	function disable()
+		hash.put(initial, false)
+		hash.put(reverse, false)
+
+		if tportal != null and fportal != null
+			fportal.setColor((0).toPlayerColor())
+			tportal.setColor((0).toPlayerColor())
+
+	ondestroy
+		hash.remove(initial)
+		hash.remove(reverse)
+		destroy initial
+		destroy reverse
+
+function makeAllPortalsRed()
+	let g = CreateGroup()
+	g.enumUnitsOfType('ncop', null)
+
+	for u in g
+		u.setColor((0).toPlayerColor())
+
+	g.destr()
+
+init
+	makeAllPortalsRed()
+
+	//new Teleport(gg_unit_ncop_0006, gg_unit_ncop_0012)

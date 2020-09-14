@@ -1,0 +1,54 @@
+package Fade
+
+import TimerUtils
+import LinkedListModule
+
+timer t
+
+public enum fadetype
+	IN
+	OUT
+
+public function unit.fade(fadetype ft, real duration)
+	new Fade(this, ft, duration)
+
+public function unit.fadeOut(real duration)
+	this.fade(fadetype.OUT, duration)
+
+public function unit.fadeIn(real duration)
+	this.fade(fadetype.IN, duration)
+
+function unit.setFade(integer raw)
+	this.setVertexColor(colorA(255,255,255, raw))
+
+public class Fade
+	use LinkedListModule
+	unit fader
+	real changeSpeed
+	real fadeState
+	construct(unit u, fadetype ft, real duration)
+		changeSpeed = (255 / duration) * 0.03
+
+		if(ft == fadetype.IN)
+			changeSpeed *= -1
+			fadeState = 0
+		else
+			fadeState = 255
+
+		fader = u
+
+function onLoop()
+	Fade current = Fade.first
+	while(current != null)
+		current.fadeState -= current.changeSpeed
+		current.fader.setFade(R2I(current.fadeState))
+		if(current.fadeState >= 255 or current.fadeState <= 0)
+			Fade next = current.next
+			destroy current
+			current = next
+		else
+			current = current.next
+
+init
+	t = getTimer()
+	t.startPeriodic(0.03, function onLoop)

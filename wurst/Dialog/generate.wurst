@@ -1,0 +1,18 @@
+package generate
+
+import ChannelAbilityPreset
+
+public integer testAbility = compiletime(ABIL_ID_GEN.next())
+public integer testUnit = compiletime(UNIT_ID_GEN.next())
+
+
+@compiletime function generate()
+    new ChannelAbilityPreset(testAbility, 1, true)
+    ..setCastRange(1, 50)
+	..setTargetType(1, Targettype.UNIT castTo int)
+
+    new UnitDefinition(testUnit, 'hkni')
+    ..setNormalAbilities(toRawCode(testAbility) + ",AInv")
+
+init
+    //createUnit(players[0], testUnit, vec2(0, 0), angle(0))
