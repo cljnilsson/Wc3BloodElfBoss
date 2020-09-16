@@ -7,24 +7,65 @@ location udg_target= null
 lightning array udg_l
 integer array udg_civilians
 boolean udg_check= false
+effect udg_ef= null
+boolean array udg_active
+integer udg_tempi= 0
+unit array udg_wagons
 
     // Generated
-rect gg_rct_Region_000= null
+rect gg_rct_crystalregion= null
 rect gg_rct_spawn= null
 rect gg_rct_safety= null
+rect gg_rct_undead_killer= null
+rect gg_rct_kel_spot= null
+rect gg_rct_archerpos1= null
+rect gg_rct_archerpos2= null
+rect gg_rct_catapulfire1= null
+rect gg_rct_catapultfire2= null
+rect gg_rct_catapultfire3= null
+rect gg_rct_catapultspawn3= null
+rect gg_rct_catapultspawn1= null
+rect gg_rct_catapultspawn2= null
+rect gg_rct_def_region= null
+rect gg_rct_3= null
+rect gg_rct_2= null
+rect gg_rct_1= null
 camerasetup gg_cam_Camera_001= null
+camerasetup gg_cam_Camera_002= null
+camerasetup gg_cam_Camera_003= null
+camerasetup gg_cam_Camera_004= null
+camerasetup gg_cam_Camera_005= null
 sound gg_snd_RollingThunder1= null
 sound gg_snd_DoorSlam1= null
-trigger gg_trg_init= null
-trigger gg_trg_trap_1= null
-trigger gg_trg_trap_2= null
-trigger gg_trg_crystal_aoe= null
-trigger gg_trg_crystal_aoe_Copy= null
+string gg_snd_BloodElfTheme
+trigger gg_trg_civilian_spawner= null
 trigger gg_trg_remove_civilians= null
+trigger gg_trg_undead_spawner= null
+trigger gg_trg_undead_killer= null
+trigger gg_trg_trap_1= null
+trigger gg_trg_crystal_aoe= null
+trigger gg_trg_kel_joins= null
+trigger gg_trg_kel_destroy= null
+trigger gg_trg_trap_2= null
+trigger gg_trg_archers_in_position= null
+trigger gg_trg_init= null
+trigger gg_trg_start= null
 unit gg_unit_narg_0051= null
 unit gg_unit_hsor_0031= null
 unit gg_unit_hsor_0033= null
+unit gg_unit_nhea_0034= null
+unit gg_unit_nhea_0035= null
+unit gg_unit_nhea_0036= null
+unit gg_unit_nhea_0037= null
+unit gg_unit_nbel_0042= null
+unit gg_unit_nbel_0043= null
+unit gg_unit_nbel_0044= null
 unit gg_unit_narg_0040= null
+unit gg_unit_esen_0038= null
+unit gg_unit_esen_0039= null
+unit gg_unit_h000_0045= null
+string gg_snd_Why_Do_We_Fight
+string gg_snd_Anduins_Theme
 
 
 //JASSHelper struct globals:
@@ -59,6 +100,14 @@ function InitGlobals takes nothing returns nothing
     endloop
 
     set udg_check=false
+    set i=0
+    loop
+        exitwhen ( i > 1 )
+        set udg_active[i]=false
+        set i=i + 1
+    endloop
+
+    set udg_tempi=0
 endfunction
 
 //***************************************************************************
@@ -82,6 +131,9 @@ function InitSounds takes nothing returns nothing
     call SetSoundParamsFromLabel(gg_snd_DoorSlam1, "DoorSlamSound")
     call SetSoundDuration(gg_snd_DoorSlam1, 485)
     call SetSoundVolume(gg_snd_DoorSlam1, 50)
+    set gg_snd_BloodElfTheme="BloodElfTheme"
+    set gg_snd_Why_Do_We_Fight="music/Why Do We Fight.mp3"
+    set gg_snd_Anduins_Theme="music/Anduins Theme.mp3"
 endfunction
 
 //***************************************************************************
@@ -108,6 +160,7 @@ function CreateBuildingsForPlayer0 takes nothing returns nothing
     set u=BlzCreateUnitWithSkin(p, 'nef1', - 480.0, - 32.0, 270.000, 'nef1')
     set u=BlzCreateUnitWithSkin(p, 'haro', - 1600.0, 128.0, 270.000, 'haro')
     set u=BlzCreateUnitWithSkin(p, 'nmgv', - 1216.0, - 384.0, 270.000, 'nmgv')
+    set gg_unit_h000_0045=BlzCreateUnitWithSkin(p, 'h000', 960.0, - 2368.0, 270.000, 'h000')
 endfunction
 
 //===========================================================================
@@ -121,12 +174,10 @@ function CreateUnitsForPlayer0 takes nothing returns nothing
     set u=BlzCreateUnitWithSkin(p, 'Hddt', 1115.5, 1275.6, 241.278, 'Hddt')
     set u=BlzCreateUnitWithSkin(p, 'Hssa', 994.7, 1348.8, 237.717, 'Hssa')
     set u=BlzCreateUnitWithSkin(p, 'nemi', 1257.1, 1240.7, 241.845, 'nemi')
-    set u=BlzCreateUnitWithSkin(p, 'nhea', 1358.9, 1231.5, 239.800, 'nhea')
+    set u=BlzCreateUnitWithSkin(p, 'hmpr', 1349.6, 1325.6, 262.181, 'hmpr')
     set u=BlzCreateUnitWithSkin(p, 'nws1', 1249.5, 1609.7, 245.495, 'nws1')
-    set u=BlzCreateUnitWithSkin(p, 'hbew', 1426.8, 1522.2, 297.881, 'hbew')
     set u=BlzCreateUnitWithSkin(p, 'nbee', 1518.3, 1338.4, 243.284, 'nbee')
     set u=BlzCreateUnitWithSkin(p, 'hspt', 1426.3, 1160.2, 225.358, 'hspt')
-    set u=BlzCreateUnitWithSkin(p, 'hsor', 1523.7, 1107.6, 226.281, 'hsor')
     set u=BlzCreateUnitWithSkin(p, 'nhef', 1615.6, 1141.1, 273.594, 'nhef')
     set u=BlzCreateUnitWithSkin(p, 'nhem', 1682.9, 1162.8, 239.872, 'nhem')
     set u=BlzCreateUnitWithSkin(p, 'hrrh', 1608.8, 1256.6, 266.456, 'hrrh')
@@ -134,29 +185,46 @@ function CreateUnitsForPlayer0 takes nothing returns nothing
     set u=BlzCreateUnitWithSkin(p, 'hhes', 1448.8, 1077.7, 207.494, 'hhes')
     set u=BlzCreateUnitWithSkin(p, 'esen', 928.4, 1085.1, 296.497, 'esen')
     set u=BlzCreateUnitWithSkin(p, 'nwat', 1130.9, 1033.4, 274.074, 'nwat')
-    set u=BlzCreateUnitWithSkin(p, 'eshd', 1250.4, 1013.1, 297.277, 'eshd')
     set u=BlzCreateUnitWithSkin(p, 'Hjnd', 1213.5, 909.8, 301.814, 'Hjnd')
     set u=BlzCreateUnitWithSkin(p, 'nbel', 1215.2, 1133.2, 281.318, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'hbew', 1791.5, - 2746.7, 180.000, 'hbew')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 5954.0, 7084.7, 180.000, 'hspt')
     set gg_unit_hsor_0031=BlzCreateUnitWithSkin(p, 'hsor', 806.1, - 1856.4, 270.000, 'hsor')
     set u=BlzCreateUnitWithSkin(p, 'narg', 1078.1, 1585.6, 275.520, 'narg')
     set gg_unit_hsor_0033=BlzCreateUnitWithSkin(p, 'hsor', 1096.7, - 1855.4, 270.000, 'hsor')
-    set u=BlzCreateUnitWithSkin(p, 'nhea', 765.7, - 1737.7, 239.800, 'nhea')
-    set u=BlzCreateUnitWithSkin(p, 'nhea', 762.5, - 1645.5, 239.800, 'nhea')
-    set u=BlzCreateUnitWithSkin(p, 'nhea', 1118.7, - 1648.0, 239.800, 'nhea')
-    set u=BlzCreateUnitWithSkin(p, 'nhea', 1106.4, - 1761.6, 239.800, 'nhea')
-    set u=BlzCreateUnitWithSkin(p, 'esen', 309.8, - 2677.6, 81.675, 'esen')
-    set u=BlzCreateUnitWithSkin(p, 'esen', 206.3, - 2660.3, 74.046, 'esen')
-    set gg_unit_narg_0040=BlzCreateUnitWithSkin(p, 'narg', 832.2, - 2124.9, 270.000, 'narg')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 696.7, - 1619.3, 270.000, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 695.4, - 1692.2, 270.000, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 699.0, - 1757.9, 270.000, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 692.7, - 1839.6, 270.000, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 693.3, - 1477.9, 270.000, 'nbel')
-    set u=BlzCreateUnitWithSkin(p, 'nbel', 692.0, - 1550.8, 270.000, 'nbel')
+    set gg_unit_nhea_0034=BlzCreateUnitWithSkin(p, 'nhea', 765.7, - 1737.7, 239.800, 'nhea')
+    set gg_unit_nhea_0035=BlzCreateUnitWithSkin(p, 'nhea', 762.5, - 1645.5, 239.800, 'nhea')
+    set gg_unit_nhea_0036=BlzCreateUnitWithSkin(p, 'nhea', 1118.7, - 1648.0, 239.800, 'nhea')
+    set gg_unit_nhea_0037=BlzCreateUnitWithSkin(p, 'nhea', 1106.4, - 1761.6, 239.800, 'nhea')
+    set gg_unit_esen_0038=BlzCreateUnitWithSkin(p, 'esen', 326.0, - 2870.5, 81.675, 'esen')
+    set gg_unit_esen_0039=BlzCreateUnitWithSkin(p, 'esen', 336.9, - 2675.8, 83.273, 'esen')
+    set gg_unit_nbel_0042=BlzCreateUnitWithSkin(p, 'nbel', 695.4, - 1692.2, 270.000, 'nbel')
+    set gg_unit_nbel_0043=BlzCreateUnitWithSkin(p, 'nbel', 688.7, - 1764.8, 270.000, 'nbel')
+    set gg_unit_nbel_0044=BlzCreateUnitWithSkin(p, 'nbel', 692.7, - 1839.6, 270.000, 'nbel')
     set u=BlzCreateUnitWithSkin(p, 'eshd', 1312.1, - 1817.6, 225.176, 'eshd')
     set u=BlzCreateUnitWithSkin(p, 'eshd', 1317.2, - 1729.8, 254.395, 'eshd')
     set u=BlzCreateUnitWithSkin(p, 'eshd', 1313.4, - 1656.5, 225.519, 'eshd')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 5951.4, 7181.3, 180.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 5950.2, 7289.1, 180.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 5958.6, 7396.8, 180.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 4283.2, 7069.4, 0.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 4280.7, 7161.9, 0.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 4281.9, 7275.4, 0.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'hspt', 4285.0, 7390.3, 0.000, 'hspt')
+    set u=BlzCreateUnitWithSkin(p, 'Hssa', 5152.5, 7885.5, 255.178, 'Hssa')
+    set u=BlzCreateUnitWithSkin(p, 'Hddt', 5019.1, 7646.3, 49.459, 'Hddt')
+    set u=BlzCreateUnitWithSkin(p, 'Hjnd', 5321.3, 7652.2, 125.318, 'Hjnd')
+    set u=BlzCreateUnitWithSkin(p, 'ebal', 1521.1, 926.0, 260.163, 'ebal')
+endfunction
+
+//===========================================================================
+function CreateUnitsForPlayer1 takes nothing returns nothing
+    local player p= Player(1)
+    local unit u
+    local integer unitID
+    local trigger t
+    local real life
+
+    set gg_unit_narg_0040=BlzCreateUnitWithSkin(p, 'narg', 832.2, - 2124.9, 270.000, 'narg')
     set gg_unit_narg_0051=BlzCreateUnitWithSkin(p, 'narg', 1077.3, - 2136.1, 270.000, 'narg')
 endfunction
 
@@ -168,12 +236,13 @@ endfunction
 //===========================================================================
 function CreatePlayerUnits takes nothing returns nothing
     call CreateUnitsForPlayer0()
+    call CreateUnitsForPlayer1()
 endfunction
 
 //===========================================================================
 function CreateAllUnits takes nothing returns nothing
     call CreateBuildingsForPlayer0() // INLINED!!
-    call CreateUnitsForPlayer0() // INLINED!!
+    call CreatePlayerUnits()
 endfunction
 
 //***************************************************************************
@@ -185,9 +254,23 @@ endfunction
 function CreateRegions takes nothing returns nothing
     local weathereffect we
 
-    set gg_rct_Region_000=Rect(864.0, - 2464.0, 1056.0, - 2272.0)
+    set gg_rct_crystalregion=Rect(864.0, - 2464.0, 1056.0, - 2272.0)
     set gg_rct_spawn=Rect(704.0, - 3584.0, 1216.0, - 3296.0)
-    set gg_rct_safety=Rect(832.0, - 1504.0, 1088.0, - 1376.0)
+    set gg_rct_safety=Rect(768.0, - 1568.0, 1152.0, - 1376.0)
+    set gg_rct_undead_killer=Rect(672.0, - 2592.0, 1216.0, - 2144.0)
+    set gg_rct_kel_spot=Rect(896.0, - 2816.0, 1024.0, - 2688.0)
+    set gg_rct_archerpos1=Rect(864.0, - 1792.0, 928.0, - 1728.0)
+    set gg_rct_archerpos2=Rect(992.0, - 1792.0, 1056.0, - 1728.0)
+    set gg_rct_catapulfire1=Rect(736.0, - 3136.0, 832.0, - 3008.0)
+    set gg_rct_catapultfire2=Rect(896.0, - 3136.0, 1024.0, - 3008.0)
+    set gg_rct_catapultfire3=Rect(1088.0, - 3136.0, 1184.0, - 3008.0)
+    set gg_rct_catapultspawn3=Rect(1088.0, - 3520.0, 1184.0, - 3392.0)
+    set gg_rct_catapultspawn1=Rect(736.0, - 3520.0, 832.0, - 3392.0)
+    set gg_rct_catapultspawn2=Rect(896.0, - 3520.0, 1024.0, - 3392.0)
+    set gg_rct_def_region=Rect(416.0, - 2240.0, 1344.0, - 1312.0)
+    set gg_rct_3=Rect(1056.0, - 1952.0, 1120.0, - 1888.0)
+    set gg_rct_2=Rect(928.0, - 1952.0, 992.0, - 1888.0)
+    set gg_rct_1=Rect(800.0, - 1952.0, 864.0, - 1888.0)
 endfunction
 
 //***************************************************************************
@@ -202,7 +285,7 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_ZOFFSET, 0.0, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_ROTATION, 87.8, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_ANGLE_OF_ATTACK, 358.9, 0.0)
-    call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_TARGET_DISTANCE, 3536.9, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_TARGET_DISTANCE, 3300.0, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_ROLL, 0.0, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_FARZ, 10000.0, 0.0)
@@ -211,6 +294,62 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0)
     call CameraSetupSetField(gg_cam_Camera_001, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0)
     call CameraSetupSetDestPosition(gg_cam_Camera_001, 1119.1, - 544.6, 0.0)
+
+    set gg_cam_Camera_002=CreateCameraSetup()
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_ZOFFSET, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_ROTATION, 140.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_ANGLE_OF_ATTACK, 349.1, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_TARGET_DISTANCE, 2554.5, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_ROLL, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_FARZ, 10000.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_NEARZ, 16.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_002, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0)
+    call CameraSetupSetDestPosition(gg_cam_Camera_002, 461.5, - 1869.5, 0.0)
+
+    set gg_cam_Camera_003=CreateCameraSetup()
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_ZOFFSET, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_ROTATION, 326.6, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_ANGLE_OF_ATTACK, 340.9, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_TARGET_DISTANCE, 1191.7, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_ROLL, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_FARZ, 10000.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_NEARZ, 16.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_003, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0)
+    call CameraSetupSetDestPosition(gg_cam_Camera_003, 875.6, - 2423.6, 0.0)
+
+    set gg_cam_Camera_004=CreateCameraSetup()
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_ZOFFSET, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_ROTATION, 270.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_ANGLE_OF_ATTACK, 337.5, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_TARGET_DISTANCE, 1191.7, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_ROLL, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_FARZ, 10000.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_NEARZ, 16.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_004, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0)
+    call CameraSetupSetDestPosition(gg_cam_Camera_004, 875.6, - 2423.6, 0.0)
+
+    set gg_cam_Camera_005=CreateCameraSetup()
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_ZOFFSET, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_ROTATION, 90.1, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_ANGLE_OF_ATTACK, 325.2, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_TARGET_DISTANCE, 801.5, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_ROLL, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_FARZ, 10000.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_NEARZ, 16.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0)
+    call CameraSetupSetField(gg_cam_Camera_005, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0)
+    call CameraSetupSetDestPosition(gg_cam_Camera_005, 981.1, - 1824.8, 0.0)
 
 endfunction
 
@@ -221,30 +360,113 @@ endfunction
 //***************************************************************************
 
 //===========================================================================
-// Trigger: init
+// Trigger: civilian spawner
 //===========================================================================
-function Trig_init_Actions takes nothing returns nothing
-    call FogEnableOff()
-    call FogMaskEnableOff()
-    set udg_eyaw[0]=Deg2Rad(0.00)
-    set udg_eyaw[1]=Deg2Rad(90.00)
-    set udg_eyaw[2]=Deg2Rad(180.00)
-    set udg_eyaw[3]=Deg2Rad(270.00)
-    set udg_civilians[0]='nhem'
-    set udg_civilians[1]='nhef'
-    set udg_civilians[2]='nbee'
-    set udg_civilians[3]='nhew'
-    set udg_civilians[4]='hrrh'
-    call SetUnitAnimation(gg_unit_narg_0040, "sleep")
-    call SetUnitAnimation(gg_unit_narg_0051, "sleep")
-    call SetUnitPathing(gg_unit_narg_0040, false)
-    call SetUnitPathing(gg_unit_narg_0051, false)
+function Trig_civilian_spawner_Actions takes nothing returns nothing
+    call CreateNUnitsAtLoc(1, udg_civilians[GetRandomInt(0, 4)], Player(0), GetRandomLocInRect(gg_rct_spawn), 90.00)
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRandomLocInRect(gg_rct_safety))
 endfunction
 
 //===========================================================================
-function InitTrig_init takes nothing returns nothing
-    set gg_trg_init=CreateTrigger()
-    call TriggerAddAction(gg_trg_init, function Trig_init_Actions)
+function InitTrig_civilian_spawner takes nothing returns nothing
+    set gg_trg_civilian_spawner=CreateTrigger()
+    call DisableTrigger(gg_trg_civilian_spawner)
+    call TriggerRegisterTimerEventPeriodic(gg_trg_civilian_spawner, 1.00)
+    call TriggerAddAction(gg_trg_civilian_spawner, function Trig_civilian_spawner_Actions)
+endfunction
+
+//===========================================================================
+// Trigger: remove civilians
+//===========================================================================
+function Trig_remove_civilians_Func002Func001C takes nothing returns boolean
+    if ( not ( GetUnitTypeId(GetTriggerUnit()) == udg_civilians[GetForLoopIndexA()] ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_remove_civilians_Func003C takes nothing returns boolean
+    if ( not ( udg_check == true ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_remove_civilians_Actions takes nothing returns nothing
+    set udg_check=false
+    set bj_forLoopAIndex=0
+    set bj_forLoopAIndexEnd=5
+    loop
+        exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
+        if ( Trig_remove_civilians_Func002Func001C() ) then
+            set udg_check=true
+        else
+        endif
+        set bj_forLoopAIndex=bj_forLoopAIndex + 1
+    endloop
+    if ( Trig_remove_civilians_Func003C() ) then
+        call RemoveUnit(GetTriggerUnit())
+        call PlaySoundBJ(gg_snd_DoorSlam1)
+    else
+    endif
+endfunction
+
+//===========================================================================
+function InitTrig_remove_civilians takes nothing returns nothing
+    set gg_trg_remove_civilians=CreateTrigger()
+    call TriggerRegisterEnterRectSimple(gg_trg_remove_civilians, gg_rct_safety)
+    call TriggerAddAction(gg_trg_remove_civilians, function Trig_remove_civilians_Actions)
+endfunction
+
+//===========================================================================
+// Trigger: undead spawner
+//===========================================================================
+function Trig_undead_spawner_Actions takes nothing returns nothing
+    call CreateNUnitsAtLoc(1, 'ugho', Player(3), GetRandomLocInRect(gg_rct_spawn), 90.00)
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "attack", GetRandomLocInRect(gg_rct_safety))
+endfunction
+
+//===========================================================================
+function InitTrig_undead_spawner takes nothing returns nothing
+    set gg_trg_undead_spawner=CreateTrigger()
+    call DisableTrigger(gg_trg_undead_spawner)
+    call TriggerRegisterTimerEventPeriodic(gg_trg_undead_spawner, 1.00)
+    call TriggerAddAction(gg_trg_undead_spawner, function Trig_undead_spawner_Actions)
+endfunction
+
+//===========================================================================
+// Trigger: undead killer
+//===========================================================================
+function Trig_undead_killer_Func008C takes nothing returns boolean
+    if ( ( GetUnitTypeId(GetTriggerUnit()) == 'ugho' ) ) then
+        return true
+    endif
+    return false
+endfunction
+
+function Trig_undead_killer_Conditions takes nothing returns boolean
+    if ( not Trig_undead_killer_Func008C() ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_undead_killer_Actions takes nothing returns nothing
+    local effect l__udg_ef
+    call UnitApplyTimedLifeBJ(0.01, 'BTLF', GetTriggerUnit())
+    call AddSpecialEffectTargetUnitBJ("origin", GetTriggerUnit(), "Doodads\\Cinematic\\TownBurningFireEmitterBlue\\TownBurningFireEmitterBlue.mdl")
+    call BlzSetSpecialEffectScale(GetLastCreatedEffectBJ(), 0.25)
+    set l__udg_ef=GetLastCreatedEffectBJ()
+    call TriggerSleepAction(2)
+    call DestroyEffectBJ(l__udg_ef)
+endfunction
+
+//===========================================================================
+function InitTrig_undead_killer takes nothing returns nothing
+    set gg_trg_undead_killer=CreateTrigger()
+    call TriggerRegisterEnterRectSimple(gg_trg_undead_killer, gg_rct_undead_killer)
+    call TriggerAddCondition(gg_trg_undead_killer, Condition(function Trig_undead_killer_Conditions))
+    call TriggerAddAction(gg_trg_undead_killer, function Trig_undead_killer_Actions)
 endfunction
 
 //===========================================================================
@@ -256,14 +478,14 @@ function Trig_trap_1_Actions takes nothing returns nothing
     call SetUnitAnimation(gg_unit_hsor_0033, "stand channel")
     call SetUnitAnimation(gg_unit_hsor_0031, "stand channel")
     call TriggerSleepAction(1.00)
-    call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_Region_000), "Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl")
+    call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_crystalregion), "Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl")
     call TriggerSleepAction(0.30)
-    call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_Region_000), "war3mapImported\\MagicShield.mdx")
+    call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_crystalregion), "war3mapImported\\MagicShield.mdx")
     set bj_forLoopAIndex=0
     set bj_forLoopAIndexEnd=3
     loop
         exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
-        call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_Region_000), "Doodads\\Cinematic\\FrostTrapSide\\FrostTrapSide")
+        call AddSpecialEffectLocBJ(GetRectCenter(gg_rct_crystalregion), "Doodads\\Cinematic\\FrostTrapSide\\FrostTrapSide")
         set udg_e[GetForLoopIndexA()]=GetLastCreatedEffectBJ()
         call BlzSetSpecialEffectYaw(udg_e[GetForLoopIndexA()], udg_eyaw[GetForLoopIndexA()])
         set bj_forLoopAIndex=bj_forLoopAIndex + 1
@@ -278,11 +500,154 @@ function InitTrig_trap_1 takes nothing returns nothing
 endfunction
 
 //===========================================================================
+// Trigger: crystal aoe
+//===========================================================================
+function Trig_crystal_aoe_Func002Func001C takes nothing returns boolean
+    if ( not ( udg_active[GetForLoopIndexA()] == false ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_crystal_aoe_Func003Func001C takes nothing returns boolean
+    if ( not ( udg_active[GetForLoopIndexA()] == true ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_crystal_aoe_Actions takes nothing returns nothing
+    set udg_tempi=0
+    set bj_forLoopAIndex=0
+    set bj_forLoopAIndexEnd=3
+    loop
+        exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
+        if ( Trig_crystal_aoe_Func002Func001C() ) then
+            set udg_tempi=( udg_tempi + 1 )
+        else
+        endif
+        set bj_forLoopAIndex=bj_forLoopAIndex + 1
+    endloop
+    set bj_forLoopAIndex=0
+    set bj_forLoopAIndexEnd=3
+    loop
+        exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
+        if ( Trig_crystal_aoe_Func003Func001C() ) then
+            set udg_eyaw[GetForLoopIndexA()]=udg_eyaw[GetForLoopIndexA()] + 0.03 + 0.03 * I2R(udg_tempi)
+            call BlzSetSpecialEffectYaw(udg_e[GetForLoopIndexA()], udg_eyaw[GetForLoopIndexA()])
+        else
+        endif
+        set bj_forLoopAIndex=bj_forLoopAIndex + 1
+    endloop
+endfunction
+
+//===========================================================================
+function InitTrig_crystal_aoe takes nothing returns nothing
+    set gg_trg_crystal_aoe=CreateTrigger()
+    call DisableTrigger(gg_trg_crystal_aoe)
+    call TriggerRegisterTimerEventPeriodic(gg_trg_crystal_aoe, 0.03)
+    call TriggerAddAction(gg_trg_crystal_aoe, function Trig_crystal_aoe_Actions)
+endfunction
+
+//===========================================================================
+// Trigger: kel joins
+//===========================================================================
+function Trig_kel_joins_Actions takes nothing returns nothing
+    call DisableTrigger(GetTriggeringTrigger())
+    call CreateNUnitsAtLoc(1, 'uktg', Player(3), GetRectCenter(gg_rct_spawn), 90.00)
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRectCenter(gg_rct_kel_spot))
+endfunction
+
+//===========================================================================
+function InitTrig_kel_joins takes nothing returns nothing
+    set gg_trg_kel_joins=CreateTrigger()
+    call TriggerAddAction(gg_trg_kel_joins, function Trig_kel_joins_Actions)
+endfunction
+
+//===========================================================================
+// Trigger: kel destroy
+//===========================================================================
+function Trig_kel_destroy_Conditions takes nothing returns boolean
+    if ( not ( GetUnitTypeId(GetTriggerUnit()) == 'uktg' ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_kel_destroy_Actions takes nothing returns nothing
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_003, Player(0), 0)
+    call SetCameraFieldForPlayer(Player(0), CAMERA_FIELD_ROTATION, 270.00, 20.00)
+    call DisableTrigger(GetTriggeringTrigger())
+    call UnitRemoveAbility(GetTriggerUnit(), 'Aatk')
+    call TriggerSleepAction(0.50)
+    call IssueImmediateOrderBJ(GetTriggerUnit(), "stop")
+    call TriggerSleepAction(0.00)
+    call SetUnitAnimation(GetTriggerUnit(), "stand channel")
+    set udg_loc=GetUnitLoc(GetTriggerUnit())
+    set udg_target=GetRectCenter(gg_rct_crystalregion)
+    call AddLightningLoc("DRAM", udg_loc, udg_target)
+    set udg_l[99]=GetLastCreatedLightningBJ()
+    call MoveLightningEx(udg_l[99], false, GetLocationX(udg_loc), GetLocationY(udg_loc), 160, GetLocationX(udg_target), GetLocationY(udg_target), 50)
+    call TriggerSleepAction(2.00)
+    set udg_active[0]=false
+    call DestroyEffectBJ(udg_e[0])
+    call TriggerSleepAction(2.00)
+    set udg_active[1]=false
+    call DestroyEffectBJ(udg_e[1])
+    call TriggerSleepAction(2.00)
+    set udg_active[2]=false
+    call DestroyEffectBJ(udg_e[2])
+    call ConditionalTriggerExecute(gg_trg_trap_2)
+    call TriggerSleepAction(4.00)
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_004, Player(0), 0)
+    call TriggerSleepAction(1.00)
+    set udg_active[3]=false
+    call DestroyEffectBJ(udg_e[3])
+    call TriggerSleepAction(1.00)
+    call DestroyLightningBJ(udg_l[99])
+    call UnitApplyTimedLifeBJ(0.01, 'BTLF', gg_unit_h000_0045)
+    call DisableTrigger(gg_trg_crystal_aoe)
+    call DisableTrigger(gg_trg_undead_killer)
+    call SetPlayerAllianceStateBJ(Player(1), Player(3), bj_ALLIANCE_UNALLIED)
+    call TriggerSleepAction(4.00)
+    call ConditionalTriggerExecute(gg_trg_archers_in_position)
+    call TriggerSleepAction(10.00)
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_001, Player(0), 0)
+    call CreateNUnitsAtLoc(1, 'umtw', Player(3), GetRectCenter(gg_rct_catapultspawn1), 90.00)
+    set udg_wagons[0]=GetLastCreatedUnit()
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRectCenter(gg_rct_catapulfire1))
+    call CreateNUnitsAtLoc(1, 'umtw', Player(3), GetRectCenter(gg_rct_catapultspawn2), 90.00)
+    set udg_wagons[1]=GetLastCreatedUnit()
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRectCenter(gg_rct_catapultfire2))
+    call CreateNUnitsAtLoc(1, 'umtw', Player(3), GetRectCenter(gg_rct_catapultspawn3), 90.00)
+    set udg_wagons[2]=GetLastCreatedUnit()
+    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRectCenter(gg_rct_catapultfire3))
+    call TriggerSleepAction(5.00)
+    call IssueTargetOrderBJ(udg_wagons[0], "attack", gg_unit_narg_0040)
+    call IssueTargetOrderBJ(udg_wagons[1], "attack", gg_unit_narg_0040)
+    call IssueTargetOrderBJ(udg_wagons[2], "attack", gg_unit_narg_0051)
+    call TriggerSleepAction(2.00)
+    call UnitRemoveAbility(udg_wagons[0], 'Aatk')
+    call UnitRemoveAbility(udg_wagons[1], 'Aatk')
+    call UnitRemoveAbility(udg_wagons[1], 'Aatk')
+endfunction
+
+//===========================================================================
+function InitTrig_kel_destroy takes nothing returns nothing
+    set gg_trg_kel_destroy=CreateTrigger()
+    call TriggerRegisterEnterRectSimple(gg_trg_kel_destroy, gg_rct_kel_spot)
+    call TriggerAddCondition(gg_trg_kel_destroy, Condition(function Trig_kel_destroy_Conditions))
+    call TriggerAddAction(gg_trg_kel_destroy, function Trig_kel_destroy_Actions)
+endfunction
+
+//===========================================================================
 // Trigger: trap 2
 //
 // Default melee game initialization for all players
 //===========================================================================
 function Trig_trap_2_Actions takes nothing returns nothing
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_005, Player(0), 0)
+    call TriggerSleepAction(0.25)
     call SetUnitAnimation(gg_unit_hsor_0033, "stand channel")
     call SetUnitAnimation(gg_unit_hsor_0031, "stand channel")
     call TriggerSleepAction(1.00)
@@ -309,6 +674,8 @@ function Trig_trap_2_Actions takes nothing returns nothing
     call TriggerSleepAction(1.00)
     call ResetUnitAnimation(gg_unit_narg_0040)
     call ResetUnitAnimation(gg_unit_narg_0051)
+    call SetUnitInvulnerable(gg_unit_narg_0040, false)
+    call SetUnitInvulnerable(gg_unit_narg_0051, false)
 endfunction
 
 //===========================================================================
@@ -318,93 +685,128 @@ function InitTrig_trap_2 takes nothing returns nothing
 endfunction
 
 //===========================================================================
-// Trigger: crystal aoe
+// Trigger: archers in position
 //===========================================================================
-function Trig_crystal_aoe_Actions takes nothing returns nothing
-    set bj_forLoopAIndex=0
-    set bj_forLoopAIndexEnd=3
-    loop
-        exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
-        set udg_eyaw[GetForLoopIndexA()]=( udg_eyaw[GetForLoopIndexA()] + 0.03 )
-        call BlzSetSpecialEffectYaw(udg_e[GetForLoopIndexA()], udg_eyaw[GetForLoopIndexA()])
-        set bj_forLoopAIndex=bj_forLoopAIndex + 1
-    endloop
+function Trig_archers_in_position_Actions takes nothing returns nothing
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_005, Player(0), 0)
+    call IssuePointOrderLocBJ(gg_unit_nhea_0035, "move", GetRectCenter(gg_rct_archerpos1))
+    call IssuePointOrderLocBJ(gg_unit_nhea_0036, "move", GetRectCenter(gg_rct_archerpos2))
+    call TriggerSleepAction(2)
+    call SetUnitFacingTimed(gg_unit_nhea_0035, 270.00, 0)
+    call SetUnitFacingTimed(gg_unit_nhea_0036, 270.00, 0)
+    call TriggerSleepAction(1.00)
+    call SetUnitAnimation(gg_unit_nhea_0034, "stand ready")
+    call SetUnitAnimation(gg_unit_nhea_0035, "stand ready")
+    call SetUnitAnimation(gg_unit_nhea_0036, "stand ready")
+    call SetUnitAnimation(gg_unit_nhea_0037, "stand ready")
+    call TriggerSleepAction(0.50)
+    call IssuePointOrderLocBJ(gg_unit_nbel_0044, "move", GetRectCenter(gg_rct_3))
+    call TriggerSleepAction(0.25)
+    call IssuePointOrderLocBJ(gg_unit_nbel_0043, "move", GetRectCenter(gg_rct_2))
+    call TriggerSleepAction(0.25)
+    call IssuePointOrderLocBJ(gg_unit_nbel_0042, "move", GetRectCenter(gg_rct_1))
 endfunction
 
 //===========================================================================
-function InitTrig_crystal_aoe takes nothing returns nothing
-    set gg_trg_crystal_aoe=CreateTrigger()
-    call DisableTrigger(gg_trg_crystal_aoe)
-    call TriggerRegisterTimerEventPeriodic(gg_trg_crystal_aoe, 0.03)
-    call TriggerAddAction(gg_trg_crystal_aoe, function Trig_crystal_aoe_Actions)
+function InitTrig_archers_in_position takes nothing returns nothing
+    set gg_trg_archers_in_position=CreateTrigger()
+    call TriggerAddAction(gg_trg_archers_in_position, function Trig_archers_in_position_Actions)
 endfunction
 
 //===========================================================================
-// Trigger: crystal aoe Copy
+// Trigger: init
 //===========================================================================
-function Trig_crystal_aoe_Copy_Actions takes nothing returns nothing
-    call CreateNUnitsAtLoc(1, udg_civilians[GetRandomInt(0, 4)], Player(0), GetRandomLocInRect(gg_rct_spawn), bj_UNIT_FACING)
-    call IssuePointOrderLocBJ(GetLastCreatedUnit(), "move", GetRandomLocInRect(gg_rct_safety))
+function Trig_init_Actions takes nothing returns nothing
+    call SetSkyModel("Environment\\Sky\\FoggedSky\\FoggedSky.mdl")
+    call CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, 0.00, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+    call CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, 0.25, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+    call StopMusicBJ(false)
+    call PlayMusicBJ(gg_snd_BloodElfTheme)
+    call SetPlayerAllianceStateBJ(Player(0), Player(3), bj_ALLIANCE_ALLIED)
+    call SetPlayerAllianceStateBJ(Player(1), Player(3), bj_ALLIANCE_ALLIED)
+    call SetPlayerAllianceStateBJ(Player(0), Player(1), bj_ALLIANCE_ALLIED)
+    call SetPlayerAllianceStateBJ(Player(1), Player(0), bj_ALLIANCE_ALLIED)
+    // -----------
+    call FogEnableOff()
+    call FogMaskEnableOff()
+    // -----------
+    call SetUnitInvulnerable(gg_unit_esen_0038, true)
+    call SetUnitInvulnerable(gg_unit_esen_0039, true)
+    // -----------
+    set udg_active[0]=true
+    set udg_active[1]=true
+    set udg_active[2]=true
+    set udg_active[3]=true
+    // -----------
+    set udg_eyaw[0]=Deg2Rad(0.00)
+    set udg_eyaw[1]=Deg2Rad(90.00)
+    set udg_eyaw[2]=Deg2Rad(180.00)
+    set udg_eyaw[3]=Deg2Rad(270.00)
+    set udg_civilians[0]='nhem'
+    set udg_civilians[1]='nhef'
+    set udg_civilians[2]='nbee'
+    set udg_civilians[3]='nhew'
+    set udg_civilians[4]='hrrh'
+    // -----------
+    call SetUnitAnimation(gg_unit_narg_0040, "sleep")
+    call SetUnitAnimation(gg_unit_narg_0051, "sleep")
+    call SetUnitInvulnerable(gg_unit_narg_0040, true)
+    call SetUnitInvulnerable(gg_unit_narg_0051, true)
+    call SetUnitPathing(gg_unit_narg_0040, false)
+    call SetUnitPathing(gg_unit_narg_0051, false)
+    call ConditionalTriggerExecute(gg_trg_start)
 endfunction
 
 //===========================================================================
-function InitTrig_crystal_aoe_Copy takes nothing returns nothing
-    set gg_trg_crystal_aoe_Copy=CreateTrigger()
-    call TriggerRegisterTimerEventPeriodic(gg_trg_crystal_aoe_Copy, 1.00)
-    call TriggerAddAction(gg_trg_crystal_aoe_Copy, function Trig_crystal_aoe_Copy_Actions)
+function InitTrig_init takes nothing returns nothing
+    set gg_trg_init=CreateTrigger()
+    call TriggerAddAction(gg_trg_init, function Trig_init_Actions)
 endfunction
 
 //===========================================================================
-// Trigger: remove civilians
+// Trigger: start
 //===========================================================================
-function Trig_remove_civilians_Func002Func001C takes nothing returns boolean
-    if ( not ( GetUnitTypeId(GetTriggerUnit()) == udg_civilians[GetForLoopIndexA()] ) ) then
-        return false
-    endif
-    return true
-endfunction
-
-function Trig_remove_civilians_Func003C takes nothing returns boolean
-    if ( not ( udg_check == true ) ) then
-        return false
-    endif
-    return true
-endfunction
-
-function Trig_remove_civilians_Actions takes nothing returns nothing
-    set udg_check=false
-    set bj_forLoopAIndex=0
-    set bj_forLoopAIndexEnd=4
-    loop
-        exitwhen bj_forLoopAIndex > bj_forLoopAIndexEnd
-        if ( Trig_remove_civilians_Func002Func001C() ) then
-            set udg_check=true
-        else
-        endif
-        set bj_forLoopAIndex=bj_forLoopAIndex + 1
-    endloop
-    if ( Trig_remove_civilians_Func003C() ) then
-        call RemoveUnit(GetTriggerUnit())
-        call PlaySoundBJ(gg_snd_DoorSlam1)
-    else
-    endif
+function Trig_start_Actions takes nothing returns nothing
+    call BlzEnableTargetIndicator(FALSE)
+    call CinematicModeBJ(true, GetPlayersAll())
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_001, Player(0), 0)
+    call CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, 0.00, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+    call TriggerSleepAction(6.00)
+    call CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, 3.00, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
+    call SetCameraFieldForPlayer(Player(0), CAMERA_FIELD_TARGET_DISTANCE, 3000.00, 20.00)
+    // -----------
+    call EnableTrigger(gg_trg_civilian_spawner)
+    call TriggerSleepAction(12.00)
+    call DisableTrigger(gg_trg_civilian_spawner)
+    call TriggerSleepAction(5.00)
+    call CameraSetupApplyForPlayer(true, gg_cam_Camera_002, Player(0), 0)
+    call SetCameraFieldForPlayer(Player(0), CAMERA_FIELD_TARGET_DISTANCE, 2000.00, 20.00)
+    call EnableTrigger(gg_trg_undead_spawner)
+    call ConditionalTriggerExecute(gg_trg_trap_1)
+    call TriggerSleepAction(10.00)
+    call ConditionalTriggerExecute(gg_trg_kel_joins)
 endfunction
 
 //===========================================================================
-function InitTrig_remove_civilians takes nothing returns nothing
-    set gg_trg_remove_civilians=CreateTrigger()
-    call TriggerRegisterEnterRectSimple(gg_trg_remove_civilians, gg_rct_safety)
-    call TriggerAddAction(gg_trg_remove_civilians, function Trig_remove_civilians_Actions)
+function InitTrig_start takes nothing returns nothing
+    set gg_trg_start=CreateTrigger()
+    call TriggerAddAction(gg_trg_start, function Trig_start_Actions)
 endfunction
 
 //===========================================================================
 function InitCustomTriggers takes nothing returns nothing
-    call InitTrig_init()
-    call InitTrig_trap_1()
-    call InitTrig_trap_2()
-    call InitTrig_crystal_aoe()
-    call InitTrig_crystal_aoe_Copy()
+    call InitTrig_civilian_spawner()
     call InitTrig_remove_civilians()
+    call InitTrig_undead_spawner()
+    call InitTrig_undead_killer()
+    call InitTrig_trap_1()
+    call InitTrig_crystal_aoe()
+    call InitTrig_kel_joins()
+    call InitTrig_kel_destroy()
+    call InitTrig_trap_2()
+    call InitTrig_archers_in_position()
+    call InitTrig_init()
+    call InitTrig_start()
 endfunction
 
 //===========================================================================
@@ -443,7 +845,7 @@ endfunction
 
 //===========================================================================
 function main takes nothing returns nothing
-    call SetCameraBounds(- 3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), - 3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 3072.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 3328.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), - 3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
+    call SetCameraBounds(- 3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), - 3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 11520.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), - 3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 11520.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), - 3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM))
     call SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     call SetTerrainFogEx(0, 1000.0, 9000.0, 0.500, 0.502, 0.502, 0.502)
     call NewSoundEnvironment("Default")

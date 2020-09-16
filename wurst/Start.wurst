@@ -1,7 +1,48 @@
 package Start
 
 import RealisticPrint
+import ClosureTimers
+import EventHelper
+import cinema
 
+function cleanup()
+	group g = GetUnitsInRectOfPlayer(gg_rct_def_region, players[0])
+	vec2 p
+
+	for unit u in g
+		p = gg_rct_def_region.randomPoint()
+		u.setPos(p)
+		u.setInvulnerable(true)
+		u.setAnimation("Decay Flesh")
+
+	g.destr()
+	g = GetUnitsInRectOfPlayer(gg_rct_def_region, players[3])
+
+	for unit u in g
+		if u.isAlive()
+			u.remove()
+
+	g.destr()
+
+function part4()
+	cinema.fadeOut(2)
+	doAfter(2) -> 
+		RealisticPrint.log("The dread scar left behind Arthas' army only goes in one direction")
+		cleanup()
+		CameraSetupApplyForPlayer( true, gg_cam_Camera_005, Player(0), 0 )
+		doAfter(4) -> 
+			cinema.fadeIn(2)
 init
-	RealisticPrint.log("Silvermoon, during Arthas' invasion")
-	//panCameraToTimed(hero.getPos(), 0)
+	RealisticPrint.log("The following map is based on official lore, but is not perfectly accurate.")	
+	doAfter(6) -> 
+		RealisticPrint.log("Silvermoon, during Arthas' invasion.")
+
+	CreateTrigger()
+	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	..addAction() ->
+		unit u = GetTriggerUnit()
+		int id = u.getTypeId()
+		if id == 'narg'
+			GetTriggeringTrigger().destr()
+			doAfter(1) -> 
+				part4()
