@@ -4,9 +4,12 @@ import TimerUtils
 import cinemaHelpers
 import LinkedListModule
 
-@configureable boolean autoStart = true //Automatically starts the next scene, leave true if you only have a single cinematic with multiple scenes.
+@configureable boolean autoStart = false //Automatically starts the next scene, leave true if you only have a single cinematic with multiple scenes.
 
 trigger t = CreateTrigger()
+
+public function code.newScene() returns Scene
+    return new Scene(this)
 
 function boolexpr.callback()
     TriggerClearConditions(t)
@@ -34,14 +37,24 @@ public class Scene
         time.setData(this castTo integer)
         time.start(0, function onStart)
 
-    static function onStart()
-        timer t = GetExpiredTimer()
-        real duration
+	static function onStart()
+		let t = GetExpiredTimer()
+		real duration
+		
         thistype instance = t.getData() castTo thistype
         instance.action.callback()
-        instance.counter++
-        duration = lastSound.length()
+		instance.counter++
 
+		if lastSound == null
+			print("Should happen " + lastDuration.toString())
+			duration = lastDuration
+		else if lastDuration == 0
+			print("Should NOT happen")
+        	duration = lastSound.length()
+		else
+			print("Last durating was 0, using default duration (3s)")
+			duration = 3
+		
         instance.time = t
         instance.time.start(duration, function onStart)
 

@@ -1,0 +1,125 @@
+package part1and4
+
+import RealisticPrint
+import ClosureTimers
+import cinema
+import cinemaHelpers
+import scene
+import Camerasetup
+
+unit king = gg_unit_Hssa_0059
+unit archer = gg_unit_Hjnd_0061
+unit captain = gg_unit_Hddt_0060
+
+Scene throneRoom
+
+function cleanup()
+	group g = GetUnitsInRectOfPlayer(gg_rct_def_region, players[0])
+	vec2 p
+
+	for unit u in g
+		p = gg_rct_def_region.randomPoint()
+		u.setPos(p)
+		u.setInvulnerable(true)
+		u.setAnimation("Decay Flesh")
+
+	g.destr()
+	g = GetUnitsInRectOfPlayer(gg_rct_def_region, players[3])
+
+	for unit u in g
+		if u.isAlive()
+			u.remove()
+
+	g.destr()
+
+function throneRoomTalk()
+	let counter = Scene.current.counter
+	switch counter
+		case 1
+			king.talk("The scourge has reached the inner city. How is the evacuation proceeding?", 4)
+		case 2
+			archer.talk("We filled our ships to the brim, now many are stranded as there are no ships left to board.", 6)
+		case 3
+			captain.talk("I've sent word to Quel'thalas, more will arrive given enough time.",  4)
+		case 4
+			king.talk("Time we do not have.",  3)
+		case 5
+			captain.talk("I'll rejoin our forces shortly and fend off the invaders - sun be willing.",  5)
+		case 6
+			king.talk("Although I commend your desire to protect our people, Thalorien. Evidentally strength in numbers do not stop this enemy, in fact, it merely grows his army.",  10)
+		case 7
+			archer.talk("What do you propose my lord?",  3)
+		case 8
+			king.talk("I'll join the fray myself.",  3)
+		case 9
+			archer.talk("You might have a chance against Arthas but he is not alone, whatever honor he had is no longer present. He won't fight you fairly one on one.",  10)
+		case 10
+			king.talk("I've seen him. He is not my equal",  3) // Add some sort of spy camera here
+		case 11
+			captain.talk("Then why--",  2)
+		case 12
+			captain.talk("It is true I can flee to fight another day. But that day would be very soon, and he would have even more undead at his disposal.I can run from this battle, we can rebuild our homes, regrow our plants and forests. But once he comes to the Sunwell.. it's irreplaceable. I would rather fight him now before things get worse.",  20)
+		case 13
+			archer.talk("Let's say you find a way to separate Arthas from his forces, you manage to battle him for long enough for the rest to flee before you fall. Then what do we do once he comes for the Sunwell?",  12)
+		case 14
+			king.talk("I've had a vision, years into the future. I saw the Sunwell whole. I do not know of the events leading up to this, but regardless of our losses I have faith that our people will prevail in the end.",  12)
+		case 15
+			archer.talk("But--",  2)
+		case 16
+			king.talk("End of discussion. Jennalla, return to the front lines and make them fall back slowly towards the docks.",  7)
+		case 17
+			archer.talk("As you wish, my lord.",  3) // move away
+		case 18
+			king.talk("As for you, Thalorien. Make sure my son is on one of the ships, no matter what. Tell him it is possibly my final will.",  7)
+		case 19
+			captain.talk("I.. will, my lord.",  3)
+		case 20
+			king.talk("Shorel'aran.. old friend.",  4)
+		default
+			destroy Scene.current
+			print("End of throne scene!")
+
+function part4()
+	cinema.fadeOut(2)
+	doAfter(2) -> 
+		RealisticPrint.log("The dread scar left behind Arthas' army only goes in one direction")
+		gg_trg_remove_civilians.disable()
+		gg_trg_undead_spawner.disable()
+		cleanup()
+		gg_cam_Camera_005.apply(0)
+		doAfter(4) -> 
+			cinema.fadeIn(2)
+			doAfter(2) -> 
+				cinema.fadeOut(2)
+				doAfter(2) ->
+					gg_cam_Camera_006.apply(0)
+					cinema.fadeIn(2)
+					doAfter(1) -> 
+						throneRoom.start()
+
+function part1()
+	gg_trg_start.execute()
+						
+init
+	//part1()
+	RealisticPrint.log("The following map is based on official lore, but is not perfectly accurate.")	
+	doAfter(6) -> 
+		RealisticPrint.log("Silvermoon, during Arthas' invasion.")
+
+	throneRoom = function throneRoomTalk.newScene()
+
+	doAfter(10) -> 
+		gg_cam_Camera_006.apply(0)
+		cinema.on()
+		cinema.fadeIn(0)
+		throneRoom.start()
+
+	CreateTrigger()
+	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+	..addAction() ->
+		unit u = GetTriggerUnit()
+		int id = u.getTypeId()
+		if id == 'narg'
+			GetTriggeringTrigger().destr()
+			doAfter(1) -> 
+				part4()

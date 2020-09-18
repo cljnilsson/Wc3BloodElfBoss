@@ -1,0 +1,43 @@
+package onInit
+
+import cinema
+import ClosureTimers
+
+init
+	doAfter(0) -> 	
+		cinema.setSky(Sky.summer)
+		cinema.fadeOut(0)
+		StopMusicBJ( false )
+		PlayMusicBJ( gg_snd_BloodElfTheme )
+		SetPlayerAllianceStateBJ( Player(0), Player(3), bj_ALLIANCE_ALLIED )
+		SetPlayerAllianceStateBJ( Player(1), Player(3), bj_ALLIANCE_ALLIED )
+		SetPlayerAllianceStateBJ( Player(0), Player(1), bj_ALLIANCE_ALLIED )
+		SetPlayerAllianceStateBJ( Player(1), Player(0), bj_ALLIANCE_ALLIED )
+		// -----------
+		FogEnableOff(  )
+		FogMaskEnableOff(  )
+		// -----------
+		udg_active[0] = true
+		udg_active[1] = true
+		udg_active[2] = true
+		udg_active[3] = true
+		// -----------
+		udg_eyaw[0] = Deg2Rad(0.00)
+		udg_eyaw[1] = Deg2Rad(90.00)
+		udg_eyaw[2] = Deg2Rad(180.00)
+		udg_eyaw[3] = Deg2Rad(270.00)
+		udg_civilians[0] = 'nhem'
+		udg_civilians[1] = 'nhef'
+		udg_civilians[2] = 'nbee'
+		udg_civilians[3] = 'nhew'
+		udg_civilians[4] = 'hrrh'
+		// -----------
+		let g = GetUnitsInRectAll(gg_rct_def_region)
+
+		for unit u in g
+			GetEnumUnit().setInvulnerable(true)
+
+		SetUnitAnimation( gg_unit_narg_0040, "sleep" )
+		SetUnitAnimation( gg_unit_narg_0051, "sleep" )
+		SetUnitPathing( gg_unit_narg_0040, false )
+		SetUnitPathing( gg_unit_narg_0051, false )

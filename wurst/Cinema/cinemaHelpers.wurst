@@ -3,17 +3,25 @@ package cinemaHelpers
 force f = bj_FORCE_PLAYER[0]
 location loc = GetRectCenter(GetPlayableMapRect())
 public sound lastSound
+public real lastDuration = 5
 
 public string exclamationMark =  "Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl"
 
+public function integer.talk(string name, string msg, real duration)
+	lastDuration = duration
+	TransmissionFromUnitTypeWithNameBJ(f, players[PLAYER_NEUTRAL_PASSIVE], this, name, loc, null, msg, bj_TIMETYPE_ADD, duration, true )
+
 public function integer.talk(string name, real duration)
-    TransmissionFromUnitTypeWithNameBJ(f, players[PLAYER_NEUTRAL_PASSIVE], this, name, loc, null, "", bj_TIMETYPE_ADD, duration, true )
+	lastDuration = duration
+	TransmissionFromUnitTypeWithNameBJ(f, players[PLAYER_NEUTRAL_PASSIVE], this, name, loc, null, "", bj_TIMETYPE_ADD, duration, true )
 
 public function integer.talk(string name)
     TransmissionFromUnitTypeWithNameBJ(f, players[PLAYER_NEUTRAL_PASSIVE], this, name, loc, null, "", bj_TIMETYPE_ADD, lastSound.length(), true )
 
 public function unit.talk(string text, real duration)
-    TransmissionFromUnitWithNameBJ(f, this, this.getName(), null, text, bj_TIMETYPE_ADD, duration, true)
+	lastDuration = duration
+	print(lastDuration)
+	TransmissionFromUnitWithNameBJ(f, this, this.getName(), null, text, bj_TIMETYPE_ADD, duration, true)
 
 public function unit.walk(vec2 pos)
     this.issuePointOrder("move", pos)
