@@ -75,6 +75,9 @@ public class cinema
     static function off()
         CinematicModeExBJ(false, f, bj_CINEMODE_INTERFACEFADE)
 
+	static function fadeInScry(real duration)
+		CinematicFadeBJ(bj_CINEFADETYPE_FADEOUT, duration, "ReplaceableTextures\\CameraMasks\\DreamFilter_Mask.blp", 0, 0, 0, 0)
+
     static function fadeIn(real duration)
         CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, duration, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
 

@@ -44,25 +44,35 @@ function throneRoomTalk()
 		case 4
 			king.talk("Time we do not have.",  3)
 		case 5
-			captain.talk("I'll rejoin our forces shortly and fend off the invaders - sun be willing.",  5)
+			captain.talk("I'll rejoin our forces shortly and fend off the invaders - sun be willing.",  4)
 		case 6
-			king.talk("Although I commend your desire to protect our people, Thalorien. Evidentally strength in numbers do not stop this enemy, in fact, it merely grows his army.",  10)
+			king.talk("Although I commend your desire to protect our people, Thalorien. Evidentally strength in numbers do not stop this enemy, in fact, it merely grows his army.",  8)
 		case 7
 			archer.talk("What do you propose my lord?",  3)
 		case 8
 			king.talk("I'll join the fray myself.",  3)
 		case 9
-			archer.talk("You might have a chance against Arthas but he is not alone, whatever honor he had is no longer present. He won't fight you fairly one on one.",  10)
+			archer.talk("You might have a chance against Arthas but he is not alone, whatever honor he had is no longer present. He won't fight you fairly one on one.",  8)
 		case 10
-			king.talk("I've seen him. He is not my equal",  3) // Add some sort of spy camera here
+			cinema.fadeOut(1)
+			doAfter(1) -> 
+				gg_cam_Camera_007.apply(0)
+				CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 1, "ReplaceableTextures\\CameraMasks\\HazeAndFogFilter_Mask.blp", 0, 0, 0, 0 )
+				doAfter(4) -> 
+					cinema.fadeOut(1)
+					doAfter(1) -> 
+						gg_cam_Camera_006.apply(0)
+						cinema.fadeIn(1)
+			king.talk("I've seen him. He is not my equal",  6)
+			// shade sound?
 		case 11
 			captain.talk("Then why--",  2)
 		case 12
-			captain.talk("It is true I can flee to fight another day. But that day would be very soon, and he would have even more undead at his disposal.I can run from this battle, we can rebuild our homes, regrow our plants and forests. But once he comes to the Sunwell.. it's irreplaceable. I would rather fight him now before things get worse.",  20)
+			king.talk("It is true I can flee to fight another day. But that day would be very soon, and he would have even more undead at his disposal.I can run from this battle, we can rebuild our homes, regrow our plants and forests. But once he comes to the Sunwell.. it's irreplaceable. I would rather fight him now before things get worse.",  15)
 		case 13
-			archer.talk("Let's say you find a way to separate Arthas from his forces, you manage to battle him for long enough for the rest to flee before you fall. Then what do we do once he comes for the Sunwell?",  12)
+			archer.talk("Let's say you find a way to separate Arthas from his forces, you manage to battle him for long enough for the rest to flee before you fall. Then what do we do once he comes for the Sunwell?",  11)
 		case 14
-			king.talk("I've had a vision, years into the future. I saw the Sunwell whole. I do not know of the events leading up to this, but regardless of our losses I have faith that our people will prevail in the end.",  12)
+			king.talk("I've had a vision, years into the future. I saw the Sunwell whole. I do not know of the events leading up to this, but regardless of our losses I have faith that our people will prevail in the end.",  10)
 		case 15
 			archer.talk("But--",  2)
 		case 16
@@ -91,8 +101,10 @@ function part4()
 			cinema.fadeIn(2)
 			doAfter(2) -> 
 				cinema.fadeOut(2)
+				StopMusic(true)
 				doAfter(2) ->
 					gg_cam_Camera_006.apply(0)
+					PlayMusic( gg_snd_Anduins_Theme)
 					cinema.fadeIn(2)
 					doAfter(1) -> 
 						throneRoom.start()
@@ -112,6 +124,9 @@ init
 		gg_cam_Camera_006.apply(0)
 		cinema.on()
 		cinema.fadeIn(0)
+		StopMusic(false)
+		ClearMapMusic()
+		PlayMusic(gg_snd_Anduins_Theme)
 		throneRoom.start()
 
 	CreateTrigger()

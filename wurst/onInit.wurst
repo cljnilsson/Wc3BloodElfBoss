@@ -8,7 +8,7 @@ init
 		cinema.setSky(Sky.summer)
 		cinema.fadeOut(0)
 		StopMusicBJ( false )
-		PlayMusicBJ( gg_snd_BloodElfTheme )
+		PlayMusic( gg_snd_BloodElfTheme )
 		SetPlayerAllianceStateBJ( Player(0), Player(3), bj_ALLIANCE_ALLIED )
 		SetPlayerAllianceStateBJ( Player(1), Player(3), bj_ALLIANCE_ALLIED )
 		SetPlayerAllianceStateBJ( Player(0), Player(1), bj_ALLIANCE_ALLIED )
@@ -35,7 +35,7 @@ init
 		let g = GetUnitsInRectAll(gg_rct_def_region)
 
 		for unit u in g
-			GetEnumUnit().setInvulnerable(true)
+			u.setInvulnerable(true)
 
 		SetUnitAnimation( gg_unit_narg_0040, "sleep" )
 		SetUnitAnimation( gg_unit_narg_0051, "sleep" )

@@ -56,11 +56,14 @@ globals
     camerasetup             gg_cam_Camera_004          = null
     camerasetup             gg_cam_Camera_005          = null
     camerasetup             gg_cam_Camera_006          = null
+    camerasetup             gg_cam_Camera_007          = null
     sound                   gg_snd_RollingThunder1     = null
     sound                   gg_snd_DoorSlam1           = null
     string                  gg_snd_BloodElfTheme
     string                  gg_snd_Why_Do_We_Fight
     string                  gg_snd_Anduins_Theme
+    string                  gg_snd_Fire_Ash_And_Dust
+    sound                   gg_snd_LightningBolt       = null
     trigger                 gg_trg_vars                = null
     trigger                 gg_trg_civilian_spawner    = null
     trigger                 gg_trg_remove_civilians    = null
@@ -88,9 +91,9 @@ globals
     unit                    gg_unit_nbel_0043          = null
     unit                    gg_unit_nbel_0044          = null
     unit                    gg_unit_narg_0040          = null
+    rect                    gg_rct_Region_020          = null
+    rect                    gg_rct_Region_021          = null
     unit                    gg_unit_h000_0005          = null
-    string                  gg_snd_Fire_Ash_And_Dust
-    sound                   gg_snd_LightningBolt       = null
 endglobals
 
 function InitGlobals takes nothing returns nothing
@@ -159,7 +162,7 @@ function CreateBuildingsForPlayer0 takes nothing returns nothing
     local trigger t
     local real life
 
-    set u = BlzCreateUnitWithSkin( p, 'h000', 960.0, -2368.0, 270.000, 'h000' )
+    set gg_unit_h000_0005 = BlzCreateUnitWithSkin( p, 'h000', 960.0, -2368.0, 270.000, 'h000' )
     set u = BlzCreateUnitWithSkin( p, 'negm', 768.0, 1728.0, 270.000, 'negm' )
     set u = BlzCreateUnitWithSkin( p, 'negf', 960.0, 1792.0, 270.000, 'negf' )
     set u = BlzCreateUnitWithSkin( p, 'negt', -512.0, 384.0, 270.000, 'negt' )
@@ -236,6 +239,84 @@ function CreateUnitsForPlayer1 takes nothing returns nothing
 endfunction
 
 //===========================================================================
+function CreateUnitsForPlayer3 takes nothing returns nothing
+    local player p = Player(3)
+    local unit u
+    local integer unitID
+    local trigger t
+    local real life
+
+    set u = BlzCreateUnitWithSkin( p, 'Uear', 9835.3, 343.6, 39.735, 'Uear' )
+    set u = BlzCreateUnitWithSkin( p, 'uban', 9735.4, 80.1, 40.287, 'uban' )
+    set u = BlzCreateUnitWithSkin( p, 'uban', 9569.2, 232.2, 40.287, 'uban' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 9284.4, -529.5, 82.367, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 9243.8, 3.9, 12.525, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9492.2, -481.4, 68.733, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9609.7, -199.5, 75.472, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9408.9, -290.4, 126.610, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9488.8, -67.3, 37.374, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9042.6, -310.6, 42.842, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8924.9, -684.8, 44.103, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8391.6, -832.0, 32.440, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8456.9, -1086.5, 46.603, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8667.1, -692.2, 30.194, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8725.6, -328.3, 9.295, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8985.5, -193.6, 28.831, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9264.2, -158.2, 352.046, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8742.1, -526.0, 52.557, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8972.2, -867.6, 43.734, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9313.7, -777.2, 63.034, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9694.2, -410.5, 92.726, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9769.3, -236.6, 98.175, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9157.9, -443.0, 47.440, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8886.1, -95.7, 23.628, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9011.0, 110.9, 19.588, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9266.5, 234.3, 9.900, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9395.2, 128.2, 26.864, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 9075.1, 295.0, 5.970, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8733.8, 124.3, 7.857, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8462.3, -398.7, 13.855, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8178.5, -577.1, 20.601, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8710.2, -853.2, 42.703, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8587.4, -1241.4, 54.806, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8260.9, -1435.8, 48.509, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8240.7, -1234.5, 33.554, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8112.9, -997.7, 27.485, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7934.4, -922.8, 304.847, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7794.5, -1302.0, 140.904, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8028.4, -1502.6, 226.754, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 8015.3, -1223.2, 256.791, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7596.1, -1141.7, 279.907, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7409.8, -1593.8, 101.473, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7660.7, -1836.2, 104.494, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6194.3, -2005.5, 345.344, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6391.2, -2225.3, 357.418, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6440.5, -1831.3, 26.269, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6716.6, -2110.1, 353.441, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7007.2, -2054.8, 352.694, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6998.0, -1620.4, 130.533, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7157.1, -1280.6, 98.199, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7385.5, -1220.3, 205.253, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 7372.9, -1859.8, 214.471, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6940.5, -1904.5, 105.988, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 5792.7, -2156.6, 237.312, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 5783.2, -2624.7, 292.135, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 5330.7, -2630.9, 30.521, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 5008.5, -2218.3, 245.343, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 4815.0, -1962.5, 181.225, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 4924.5, -2524.6, 81.785, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6227.0, -2617.5, 94.244, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 5513.1, -1964.5, 20.248, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6061.9, -2374.6, 272.381, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'ugho', 6583.0, -2513.9, 137.949, 'ugho' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 6535.4, -1983.3, 293.948, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 7264.6, -1440.0, 314.482, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 8677.4, -1027.8, 55.369, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 8913.5, -397.5, 37.391, 'uabo' )
+    set u = BlzCreateUnitWithSkin( p, 'uabo', 8364.2, -993.3, 39.110, 'uabo' )
+endfunction
+
+//===========================================================================
 function CreatePlayerBuildings takes nothing returns nothing
     call CreateBuildingsForPlayer0(  )
 endfunction
@@ -244,6 +325,7 @@ endfunction
 function CreatePlayerUnits takes nothing returns nothing
     call CreateUnitsForPlayer0(  )
     call CreateUnitsForPlayer1(  )
+    call CreateUnitsForPlayer3(  )
 endfunction
 
 //===========================================================================
@@ -283,6 +365,12 @@ function CreateRegions takes nothing returns nothing
     set we = AddWeatherEffect( gg_rct_weather, 'LRaa' )
     call EnableWeatherEffect( we, true )
     set gg_rct_target = Rect( 832.0, -1504.0, 1088.0, -1408.0 )
+    set gg_rct_Region_020 = Rect( 4672.0, -3552.0, 11360.0, -480.0 )
+    set we = AddWeatherEffect( gg_rct_Region_020, 'FDwh' )
+    call EnableWeatherEffect( we, true )
+    set gg_rct_Region_021 = Rect( 6528.0, -512.0, 8160.0, 1824.0 )
+    set we = AddWeatherEffect( gg_rct_Region_021, 'FDwh' )
+    call EnableWeatherEffect( we, true )
 endfunction
 
 //***************************************************************************
@@ -377,6 +465,20 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField( gg_cam_Camera_006, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0 )
     call CameraSetupSetDestPosition( gg_cam_Camera_006, 5495.6, 7631.4, 0.0 )
 
+    set gg_cam_Camera_007 = CreateCameraSetup(  )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_ZOFFSET, 0.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_ROTATION, 223.8, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_ANGLE_OF_ATTACK, 348.4, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_TARGET_DISTANCE, 1428.1, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_ROLL, 0.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_FARZ, 10000.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_NEARZ, 16.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_007, CAMERA_FIELD_LOCAL_ROLL, 0.0, 0.0 )
+    call CameraSetupSetDestPosition( gg_cam_Camera_007, 9408.6, -85.9, 0.0 )
+
 endfunction
 
 //***************************************************************************
@@ -392,6 +494,8 @@ function Trig_vars_Actions takes nothing returns nothing
     call KillUnit( gg_unit_Hssa_0059 )
     call KillUnit( gg_unit_Hjnd_0061 )
     call KillUnit( gg_unit_Hddt_0060 )
+    // ---
+    call KillUnit( gg_unit_h000_0005 )
     // ---
     call KillUnit( gg_unit_nbel_0042 )
     call KillUnit( gg_unit_nbel_0043 )
@@ -858,7 +962,7 @@ endfunction
 //***************************************************************************
 
 function config takes nothing returns nothing
-    call SetMapName( "TRIGSTR_027" )
+    call SetMapName( "MyMapName" )
     call SetMapDescription( "TRIGSTR_005" )
     call SetPlayers( 1 )
     call SetTeams( 1 )
