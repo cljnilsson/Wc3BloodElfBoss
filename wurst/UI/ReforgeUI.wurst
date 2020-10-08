@@ -1,0 +1,406 @@
+package ReforgeUI
+
+import LinkedList
+import ClosureEvents
+import ClosureTimers
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+// CONSTANTS
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+constant MINIMAP_ORIGIN_FRAME = getOriginFrame(ORIGIN_FRAME_MINIMAP)
+constant MINIMAP_BUTTON_FRAME = getOriginFrame(ORIGIN_FRAME_MINIMAP_BUTTON).getParent()
+constant MINIMAP_FRAME = getFrame("MiniMapFrame", 0)
+constant MINIMAP_WIDTH = .13 //MINIMAP_ORIGIN_FRAME.getWidth()
+constant MINIMAP_HEIGHT = MINIMAP_WIDTH
+constant MINIMAP_BUTTON_WIDTH = .0175
+constant MINIMAP_BUTTON_HEIGHT = MINIMAP_BUTTON_WIDTH
+constant MINIMAP_SEPARATOR = .005
+
+constant IDLE_WORKER_ICON_FRAME = getOriginFrame(ORIGIN_FRAME_SIMPLE_UI_PARENT).blzGetChild(7)
+
+constant QUEST_BUTTON = BlzFrameGetChild(BlzFrameGetChild(getOriginFrame(ORIGIN_FRAME_SIMPLE_UI_PARENT), 3), 0)
+constant MENU_BUTTON = BlzFrameGetChild(BlzFrameGetChild(getOriginFrame(ORIGIN_FRAME_SIMPLE_UI_PARENT), 3), 1)
+constant ALLIANCE_BUTTON = BlzFrameGetChild(BlzFrameGetChild(getOriginFrame(ORIGIN_FRAME_SIMPLE_UI_PARENT), 3), 2)
+constant LOG_BUTTON = BlzFrameGetChild(BlzFrameGetChild(getOriginFrame(ORIGIN_FRAME_SIMPLE_UI_PARENT), 3), 3)
+
+constant MENU_BUTTON_HEIGHT = .020
+constant MENU_BUTTON_WIDTH = .018
+constant MENU_BUTTON_SEPARATOR = .003
+constant MENU_BUTTON_Y_OFFSET = -.0015
+
+constant TIME_OF_DAY_MOUSE_LISTENER = getOriginFrame(ORIGIN_FRAME_GAME_UI).blzGetChild(5).blzGetChild(0).blzGetChild(0)
+
+constant CLOCK_STOPWATCH_HEIGHT = .018
+constant CLOCK_STOPWATCH_WIDTH = .034
+
+constant PORTRAIT_FRAME = getOriginFrame(ORIGIN_FRAME_PORTRAIT)
+constant PORTRAIT_WIDTH = .055
+constant PORTRAIT_HEIGHT = .065
+constant PORTRAIT_HALF_HEIGHT = PORTRAIT_HEIGHT / 2
+constant PORTRAIT_HALF_WIDTH = PORTRAIT_WIDTH / 2
+constant PORTRAIT_SEPARATOR = .005
+
+framehandle HP_FRAME
+framehandle MANA_FRAME
+real HP_FRAME_WIDTH
+real HP_FRAME_HEIGHT
+real HP_FRAME_HALF_WIDTH
+real HP_FRAME_HALF_HEIGHT
+
+constant VALUE_HEIGHT = .015
+constant VALUE_MIDHEIGHT = VALUE_HEIGHT * .5
+constant VALUE_WIDTH = PORTRAIT_WIDTH
+constant VALUE_MIDWIDTH = VALUE_WIDTH * .5
+
+constant INFO_PANEL_FRAME = getFrame("SimpleInfoPanelUnitDetail", 0).getParent()
+constant INFO_PANEL_WIDTH = INFO_PANEL_FRAME.getWidth()//.16
+constant INFO_PANEL_HEIGHT = INFO_PANEL_FRAME.getHeight()//.08
+constant INFO_PANEL_SEPARATOR = PORTRAIT_SEPARATOR
+constant INFO_PANEL_FRAME_X_OFFSET = PORTRAIT_SEPARATOR                             // will nudge the infoPanel left by this amount
+constant INFO_PANEL_FRAME_Y_OFFSET = .0165                                          // will nudge the infoPanel down by this amount
+
+constant ICON_WIDTH = getFrame("InventoryButton_0", 0).getWidth()//.0295
+constant ICON_HEIGHT = ICON_WIDTH
+constant ICON_COL_GAP = .0025
+constant ICON_ROW_GAP = ICON_COL_GAP
+
+constant CC_WIDTH = ICON_WIDTH * 6 + ICON_COL_GAP * 5
+constant CC_HEIGHT = ICON_HEIGHT * 2 + ICON_ROW_GAP * 1
+constant CC_SEPARATOR = PORTRAIT_SEPARATOR
+
+constant ITEM_SLOT_WIDTH = ICON_WIDTH
+constant ITEM_SLOT_HEIGHT = ITEM_SLOT_WIDTH
+constant ITEM_SLOT_SEPARATOR = ICON_COL_GAP
+
+constant RESOURCE_BAR_FRAME = getFrame("ResourceBarFrame", 0)
+constant RESOURCE_BAR_OFFSET = vec2(0., .01)
+constant RESOURCE_BAR_WIDHT = RESOURCE_BAR_FRAME.getWidth()
+constant RESOURCE_BAR_HEIGHT = RESOURCE_BAR_FRAME.getHeight()
+
+constant INVENTORY_WIDTH = ITEM_SLOT_WIDTH * 3 + ITEM_SLOT_SEPARATOR * 2
+constant INVENTORY_HEIGHT = ITEM_SLOT_HEIGHT * 2 + ITEM_SLOT_SEPARATOR
+constant INVENTORY_SEPARATOR = PORTRAIT_SEPARATOR
+constant INVENTORY_TEXT_FRAME = getFrame("InventoryText", 0)
+constant INVENTORY_TEXT_WIDTH = INVENTORY_TEXT_FRAME.getWidth()
+constant INVENTORY_TEXT_HEIGHT = INVENTORY_TEXT_FRAME.getHeight()
+constant INVENTORY_COVER = getFrame("SimpleInventoryCover", 0)
+
+constant TOOLTIP_WIDTH = CC_WIDTH + INVENTORY_WIDTH + INVENTORY_SEPARATOR
+
+constant EDGE_OFFSET = .005
+
+constant UI_WIDTH = PORTRAIT_WIDTH + PORTRAIT_SEPARATOR + INFO_PANEL_WIDTH + CC_WIDTH + INVENTORY_WIDTH
+constant UI_HEIGHT = INFO_PANEL_HEIGHT
+
+constant FLAG = true
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+// OTHER VARS
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+framehandle GAME_STOPWATCH
+framehandle GAME_STOPWATCH_TEXT
+framehandle GAME_DAY_NIGHT_CLOCK
+framehandle GAME_DAY_NIGHT_CLOCK_TEXT
+
+var gameDurationSeconds = 0.
+var gameDurationHours = 0.
+var timeOfDaySeconds = 0.
+var timeOfDayHours = 0.
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+// ARRAY FRAMEHANDLES
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+
+framehandle array minimapButton
+framehandle array inventoryButton
+framehandle array commandButton
+framehandle array menuButton
+framehandle array resourceFrame
+
+function framehandle.blzGetChild(int context) returns framehandle
+    return BlzFrameGetChild(this, context)
+
+public function onInit()
+    // Setup arrays
+
+    // Minimap Buttons - they're placed from top to bottom
+    minimapButton[4] = getFrame("FormationButton", 0)
+    minimapButton[3] = getFrame("MiniMapCreepButton", 0)
+    minimapButton[2] = getFrame("MiniMapAllyButton", 0)
+    minimapButton[1] = getFrame("MiniMapTerrainButton", 0)
+    minimapButton[0] = getFrame("MinimapSignalButton", 0)
+    
+    // Inventory Buttons
+    inventoryButton[0] = getFrame("InventoryButton_0", 0)
+    inventoryButton[1] = getFrame("InventoryButton_1", 0)
+    inventoryButton[2] = getFrame("InventoryButton_2", 0)
+    inventoryButton[3] = getFrame("InventoryButton_3", 0)
+    inventoryButton[4] = getFrame("InventoryButton_4", 0)
+    inventoryButton[5] = getFrame("InventoryButton_5", 0)
+        
+    // Command Buttons
+    commandButton[0] = getFrame("CommandButton_0", 0)
+    commandButton[1] = getFrame("CommandButton_1", 0)
+    commandButton[2] = getFrame("CommandButton_2", 0)
+    commandButton[3] = getFrame("CommandButton_3", 0)
+    commandButton[4] = getFrame("CommandButton_4", 0)
+    commandButton[5] = getFrame("CommandButton_5", 0)
+    commandButton[6] = getFrame("CommandButton_6", 0)
+    commandButton[7] = getFrame("CommandButton_7", 0)
+    commandButton[8] = getFrame("CommandButton_8", 0)
+    commandButton[9] = getFrame("CommandButton_9", 0)
+    commandButton[10] = getFrame("CommandButton_10", 0)
+    commandButton[11] = getFrame("CommandButton_11", 0)
+
+    // Menu Buttons
+    menuButton[0] = getFrame("UpperButtonBarQuestsButton", 0)
+    menuButton[1] = getFrame("UpperButtonBarMenuButton", 0)
+    menuButton[2] = getFrame("UpperButtonBarAlliesButton", 0)
+    menuButton[3] = getFrame("UpperButtonBarChatButton", 0)
+
+    // Resource frames
+    resourceFrame[0] = getFrame("ResourceBarGoldText", 0)
+    resourceFrame[1] = getFrame("ResourceBarLumberText", 0)
+    resourceFrame[2] = getFrame("ResourceBarSupplyText", 0)
+    resourceFrame[3] = getFrame("ResourceBarUpkeepText", 0)
+
+    // Start re-arranging the UI proper
+        
+    if FLAG        
+        enableUIAutoPosition(false)
+		//getFrame("ConsoleUI", 0)
+		//..setAbsPoint(FRAMEPOINT_TOPLEFT, 0.0, 0.6265)
+        // do after a delay because SimpleFrames are finicky and the HP/MANA frames don't exist on init.
+        doAfter(.3) ->
+
+            // ... then bring every element back one by one, repositioning and rescaling as needed
+            vec2 startingPoint
+            vec2 pos
+
+			HP_FRAME = getOriginFrame(ORIGIN_FRAME_PORTRAIT_HP_TEXT)
+			MANA_FRAME = getOriginFrame(ORIGIN_FRAME_PORTRAIT_MANA_TEXT)
+
+            HP_FRAME_WIDTH = HP_FRAME.getWidth()
+            HP_FRAME_HEIGHT = HP_FRAME.getHeight()
+            HP_FRAME_HALF_WIDTH = HP_FRAME_WIDTH/2
+            HP_FRAME_HALF_HEIGHT = HP_FRAME_HEIGHT/2
+			
+			//setOriginFramesVisible(false)
+            getFrame("ConsoleUIBackdrop", 0).hide()
+
+            //*----*----* MINIMAP *----*----*//
+            
+            startingPoint = vec2(0., EDGE_OFFSET)
+            
+            MINIMAP_ORIGIN_FRAME
+            ..show()..clearAllPoints()..setSize(MINIMAP_WIDTH, MINIMAP_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMLEFT, startingPoint)
+
+            /*MINIMAP_FRAME
+            ..show()..clearAllPoints()..setSize(MINIMAP_WIDTH, MINIMAP_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMLEFT, startingPoint)*/
+
+            MINIMAP_BUTTON_FRAME.show()
+
+            for i = 0 to 4
+                minimapButton[i]
+                ..hide()
+
+            //*----*----* RESOURCE BAR *----*----*//
+
+            framehandle fh
+
+            RESOURCE_BAR_FRAME..show()..clearAllPoints()
+            ..setSize(RESOURCE_BAR_WIDHT, RESOURCE_BAR_HEIGHT)..setPoint(FRAMEPOINT_BOTTOMLEFT, commandButton[0], FRAMEPOINT_TOPLEFT, RESOURCE_BAR_OFFSET)
+
+            // gold
+            /*fh = resourceFrame[0]
+            ..show()..clearAllPoints()
+            fh.setSize(fh.getWidth(), fh.getHeight())
+            fh.setPoint(FRAMEPOINT_BOTTOMLEFT, commandButton[0], FRAMEPOINT_TOPLEFT)
+
+            // lumber
+            fh = resourceFrame[1]
+            ..show()..clearAllPoints()
+            fh.setSize(fh.getWidth(), fh.getHeight())
+            fh.setPoint(FRAMEPOINT_LEFT, resourceFrame[0], FRAMEPOINT_RIGHT)*/
+
+            // food
+            fh = resourceFrame[2]
+            ..clearAllPoints()
+            //fh.setSize(fh.getWidth(), fh.getHeight())
+            fh.setPoint(FRAMEPOINT_LEFT, resourceFrame[1], FRAMEPOINT_RIGHT)
+
+            // upkeep
+            fh = resourceFrame[3]
+            ..clearAllPoints()
+            //fh.setSize(fh.getWidth(), fh.getHeight())
+            fh.setPoint(FRAMEPOINT_RIGHT, RESOURCE_BAR_FRAME, FRAMEPOINT_RIGHT, -.042, 0.)
+
+            //*----*----* OVER-MINIMAP STUFF *----*----*//
+
+            // time of day clock
+            GAME_DAY_NIGHT_CLOCK = createFrame("SimpleTextSmall")
+            ..setPoint(FRAMEPOINT_BOTTOMRIGHT, MINIMAP_FRAME, FRAMEPOINT_TOPRIGHT, MINIMAP_BUTTON_WIDTH + MINIMAP_SEPARATOR, MINIMAP_SEPARATOR)
+			..setSize(CLOCK_STOPWATCH_WIDTH, CLOCK_STOPWATCH_HEIGHT)
+			..hide()
+
+            GAME_DAY_NIGHT_CLOCK_TEXT = getFrame("SimpleTextSmallValue", 0)
+			..setText("00:00")
+			..hide()
+
+            TIME_OF_DAY_MOUSE_LISTENER..clearAllPoints()..setAllPoints(GAME_DAY_NIGHT_CLOCK)..setParent(GAME_DAY_NIGHT_CLOCK_TEXT)
+
+            // game duration clock
+            GAME_STOPWATCH = createFrame("SimpleTextSmall")
+            ..setPoint(FRAMEPOINT_BOTTOMLEFT, MINIMAP_FRAME, FRAMEPOINT_TOPLEFT, 0., MINIMAP_SEPARATOR)
+            ..setSize(CLOCK_STOPWATCH_WIDTH, CLOCK_STOPWATCH_HEIGHT)
+
+            GAME_STOPWATCH_TEXT = getFrame("SimpleTextSmallValue", 0)
+            ..setText("00:00")
+
+            let gameClock = CreateTimer()
+            gameClock.startPeriodic(1., function updateGameClock)
+
+			getOriginFrame(ORIGIN_FRAME_UNIT_MSG).setAbsPoint(FRAMEPOINT_BOTTOMLEFT, 0, 0.15)
+
+            // menu butttons
+            MENU_BUTTON.hide()
+
+            ALLIANCE_BUTTON.hide()
+            LOG_BUTTON.hide()
+
+            QUEST_BUTTON.hide()
+
+            IDLE_WORKER_ICON_FRAME.hide()
+        
+
+
+            //*----*----* INVENTORY GRID *----*----*//
+
+            startingPoint = vec2(.8, EDGE_OFFSET)
+            pos = startingPoint
+            
+            INVENTORY_TEXT_FRAME
+            ..show()..clearAllPoints()
+            ..setAlpha(255)..setText("Inventory")
+            ..setSize(INVENTORY_TEXT_WIDTH, INVENTORY_TEXT_HEIGHT)
+            ..setAbsPoint(FRAMEPOINT_BOTTOM, startingPoint + vec2(INVENTORY_WIDTH *.5, INVENTORY_HEIGHT + INVENTORY_SEPARATOR))
+
+            INVENTORY_COVER
+            ..setAlpha(0)
+
+            /* SLOTS 5 4 3 */
+            pos = inventoryButton[5].itemGrid(pos)
+            pos = inventoryButton[4].itemGrid(pos)
+            inventoryButton[3].itemGrid(pos)
+
+            pos = startingPoint + vec2(0., ITEM_SLOT_HEIGHT + ITEM_SLOT_SEPARATOR)
+
+            /* SLOTS 2 1 0 */
+            pos = inventoryButton[2].itemGrid(pos)
+            pos = inventoryButton[1].itemGrid(pos)
+            inventoryButton[0].itemGrid(pos)
+
+            pos = startingPoint + vec2(0., CC_HEIGHT + CC_SEPARATOR + RESOURCE_BAR_HEIGHT) + RESOURCE_BAR_OFFSET
+            getOriginFrame(ORIGIN_FRAME_UBERTOOLTIP)..clearAllPoints()..setWidth(TOOLTIP_WIDTH)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)
+
+
+
+            //*----*----* COMMAND CARD *----*----*//
+
+            startingPoint -= vec2(INVENTORY_WIDTH + INVENTORY_SEPARATOR, 0.)
+            pos = startingPoint
+
+            //------------------------------------
+            //
+            //      Original positions
+            //
+            //      Q W E R
+            //      A S D F
+            //      Z X C V
+            //
+            //
+            //      New positions
+            //
+            //      Q W E R A S
+            //      Z X C V D F
+            //
+            //------------------------------------
+
+            /* F D V C X Z */
+            pos = commandButton[7].ccIcon(pos)
+            pos = commandButton[6].ccIcon(pos)
+            pos = commandButton[11].ccIcon(pos)
+            pos = commandButton[10].ccIcon(pos)
+            pos = commandButton[9].ccIcon(pos)
+            commandButton[8].ccIcon(pos)
+
+            pos = startingPoint + vec2(0., ICON_HEIGHT + ICON_ROW_GAP)
+
+            /* S A R E W Q */
+            pos = commandButton[5].ccIcon(pos)
+            pos = commandButton[4].ccIcon(pos)
+            pos = commandButton[3].ccIcon(pos)
+            pos = commandButton[2].ccIcon(pos)
+            pos = commandButton[1].ccIcon(pos)
+            commandButton[0].ccIcon(pos)
+
+            //*----*----* INFO PANEL *----*----*//
+
+            startingPoint -= vec2(CC_WIDTH + CC_SEPARATOR, 0.)
+            INFO_PANEL_FRAME
+            ..show()..clearAllPoints()
+            ..setSize(INFO_PANEL_WIDTH, INFO_PANEL_HEIGHT)
+            ..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, startingPoint.x - INFO_PANEL_FRAME_X_OFFSET, startingPoint.y - INFO_PANEL_FRAME_Y_OFFSET)
+
+            startingPoint -= vec2(INFO_PANEL_WIDTH - PORTRAIT_SEPARATOR*2, 0.)
+
+            PORTRAIT_FRAME
+            ..clearAllPoints()
+            ..setSize(PORTRAIT_WIDTH, PORTRAIT_HEIGHT)
+			..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, startingPoint + vec2(0., HP_FRAME_HEIGHT*2 + PORTRAIT_SEPARATOR*2))
+			
+			HP_FRAME
+			..clearAllPoints()
+			//..setPoint(FRAMEPOINT_TOPLEFT, PORTRAIT_FRAME, FRAMEPOINT_BOTTOMLEFT, 0, 0)
+			..setAbsPoint(FRAMEPOINT_CENTER, startingPoint + vec2(-PORTRAIT_HALF_WIDTH - HP_FRAME_HALF_WIDTH, HP_FRAME_HALF_HEIGHT + HP_FRAME_HALF_HEIGHT + PORTRAIT_SEPARATOR*2))
+
+			MANA_FRAME
+			..clearAllPoints()
+			//..setPoint(FRAMEPOINT_TOP, HP_FRAME, FRAMEPOINT_BOTTOM, 0, 0)
+			..setAbsPoint(FRAMEPOINT_CENTER, startingPoint + vec2(-PORTRAIT_HALF_WIDTH - HP_FRAME_HALF_WIDTH, HP_FRAME_HALF_HEIGHT))
+			
+			getOriginFrame(ORIGIN_FRAME_UNIT_PANEL_BUFF_BAR)
+			..show()..clearAllPoints()
+			..setPoint(FRAMEPOINT_BOTTOMLEFT, PORTRAIT_FRAME, FRAMEPOINT_TOPLEFT, -0.01, INFO_PANEL_SEPARATOR)
+
+			
+
+
+
+function framehandle.ccIcon(vec2 pos) returns vec2
+    this..show()..clearAllPoints()..setSize(ICON_WIDTH, ICON_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)
+    return pos - vec2(ICON_WIDTH + ICON_COL_GAP, 0.)
+
+function framehandle.itemGrid(vec2 pos) returns vec2
+    this..show()..clearAllPoints()..setSize(ITEM_SLOT_WIDTH, ITEM_SLOT_HEIGHT)..setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, pos)
+    return pos - vec2(ITEM_SLOT_WIDTH + ITEM_SLOT_SEPARATOR, 0.)
+
+function updateGameClock()
+	gameDurationSeconds ++
+	if gameDurationSeconds > 59.
+		gameDurationSeconds = 0.
+		gameDurationHours ++
+	var hr = gameDurationHours.toInt().toString() 
+	var sec = gameDurationSeconds.toInt().toString()
+	if gameDurationHours < 10.
+		hr = "0" + hr
+	if gameDurationSeconds < 10.
+		sec = "0" + sec
+	let stopwatch = hr + ":" + sec
+	GAME_STOPWATCH_TEXT.setText(stopwatch)
+
+	GAME_DAY_NIGHT_CLOCK_TEXT.setText(GetTimeOfDay().toString())

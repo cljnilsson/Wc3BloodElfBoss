@@ -33,7 +33,7 @@ public class camera
         CameraSetSmoothingFactor(0)
 
     static function shake(player p, real value)
-        real richter = value > 5 ? 5 : (value < 2 ? 2 : value)
+        let richter = value > 5 ? 5 : (value < 2 ? 2 : value)
         if(p.isLocalPlayer())
             CameraSetTargetNoiseEx(value * 2.0, value * Pow(10,richter),true)
             CameraSetSourceNoiseEx(value * 2.0, value * Pow(10,richter),true)

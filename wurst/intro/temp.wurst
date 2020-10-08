@@ -14,6 +14,10 @@ function archerPosition()
 	archer1.walk(gg_rct_archerpos1.getCenter())
 	archer2.walk(gg_rct_archerpos2.getCenter())
 
+	archer1.setAnimation("birth")
+	doAfter(1.69) -> 
+		ResetUnitAnimation(archer1)
+
 	doAfter(2) -> 
 		archer1.setFacing(angle(270))
 		archer2.setFacing(angle(270))
@@ -34,7 +38,7 @@ function archerPosition()
 				gg_unit_nbel_0042.walk(gg_rct_1.getCenter())
 
 function conditions() returns boolean
-    return GetUnitTypeId(GetTriggerUnit()) == 'uktg'
+	return GetUnitTypeId(GetTriggerUnit()) == 'uktg'
 
 function actions()
 	let kel = GetTriggerUnit()

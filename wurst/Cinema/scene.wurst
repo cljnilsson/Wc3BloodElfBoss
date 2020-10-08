@@ -37,12 +37,12 @@ public class Scene
         time.setData(this castTo integer)
         time.start(0, function onStart)
 
-	static function onStart()
+	static function onStart()	
 		let t = GetExpiredTimer()
 		real duration
 		
-        thistype instance = t.getData() castTo thistype
-        instance.action.callback()
+		thistype instance = t.getData() castTo thistype
+		instance.action.callback()
 		instance.counter++
 
 		if lastSound == null
@@ -50,12 +50,12 @@ public class Scene
 			duration = lastDuration
 		else if lastDuration == 0
 			print("Should NOT happen")
-        	duration = lastSound.length()
+			duration = lastSound.length()
 		else
 			print("Last durating was 0, using default duration (3s)")
 			duration = 3
 		
-        instance.time = t
+		instance.time = t
         instance.time.start(duration, function onStart)
 
     ondestroy

@@ -12,8 +12,8 @@ public enum attribute
 	ZOFFSET
 
 // Similar syntax to R2S and I2R etc
-function A2CF(attribute a) returns camerafield
-	camerafield cf = null
+function a2cf(attribute a) returns camerafield
+	camerafield cf
 	switch a
 		case TARGET_DISTANCE
 			cf = CAMERA_FIELD_TARGET_DISTANCE
@@ -32,8 +32,8 @@ function A2CF(attribute a) returns camerafield
 
 	return cf
 
-function attribute.A2CF() returns camerafield
-	return A2CF(this)
+function attribute.a2cf() returns camerafield
+	return a2cf(this)
 
 function player.isLocalPlayer() returns boolean
 	return this == localPlayer
@@ -48,11 +48,11 @@ public function camerasetup.apply(real duration)
 		
 public function camerasetup.setAttribute(attribute a, real value, real duration)
 	if (players[0].isLocalPlayer())
-		SetCameraField(a.A2CF(), value, duration)
+		SetCameraField(a.a2cf(), value, duration)
 
 public function camerasetup.setAttribute(attribute a, player p, real value, real duration)
 	if (p.isLocalPlayer())
-		SetCameraField(a.A2CF(), value, duration)
+		SetCameraField(a.a2cf(), value, duration)
 
 public function camerasetup.getX() returns real
 	return CameraSetupGetDestPositionX(this)

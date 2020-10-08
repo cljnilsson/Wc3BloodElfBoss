@@ -1,0 +1,229 @@
+package info
+
+import ClosureTimers
+
+framehandle array panels
+framehandle array panelsFrame
+integer panelsCount = 1
+trigger array panelsCondition
+framehandle array tooltipListener
+trigger array tooltipListenerAction
+
+integer tooltipListenerCount = 0
+integer createContext = 1000
+public unit unitInfoUnit
+trigger updates = CreateTrigger()
+trigger buttonTrigger = CreateTrigger()
+integer activeIndex = 1
+group g = CreateGroup()
+timer updateTimer = CreateTimer()
+
+public framehandle unitInfoTooltipFrame
+framehandle tooltipBox
+framehandle tooltipText
+
+framehandle pageUp
+framehandle pageDown
+framehandle unitInfo
+framehandle parent
+
+framehandle unitInfoInfoFrame
+framehandle unitInfoIconFrame
+framehandle unitInfoLabelFrame
+framehandle unitInfoTextFrame
+
+public string unitInfoTooltipText = ""
+
+public function player.unitInfoGetUnit() returns unit
+	GroupEnumUnitsSelected(g, this, null)
+	unitInfoUnit = FirstOfGroup(g)
+	GroupClear(g)
+	return unitInfoUnit
+
+// frame is the containerPanel, update a function(unit) that runs every updateTick, condition is a function that returns true or false it is used to prevent showing this panel currently.
+public function addUnitInfoPanel(framehandle frame, code update, code condition)
+	BlzFrameSetParent(frame, BlzGetFrameByName("SimpleInfoPanelUnitDetail", 0))
+	panelsCount++
+	panels[panelsCount] = frame
+	if condition != null 
+		panelsCondition[panelsCount] = CreateTrigger()
+		TriggerAddCondition(panelsCondition[panelsCount], Filter(condition))
+	
+	TriggerAddCondition(updates, Filter(update))
+	BlzFrameSetVisible(frame, false)
+
+function addUnitInfoPanelEx(code update, code condition) returns framehandle
+	let frame = BlzCreateFrameByType("SIMPLEFRAME", "", BlzGetFrameByName("SimpleInfoPanelUnitDetail", 0), "", 0)
+	addUnitInfoPanel(frame, update, condition)
+	return frame
+
+function setUnitInfoPanelFrame(framehandle frame)
+	panelsFrame[panelsCount] = frame
+	BlzFrameSetVisible(frame, false)
+
+function setUnitInfoPanelFrameEx() returns framehandle
+	let frame = BlzCreateFrameByType("FRAME", "", BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0), "", 0)
+	setUnitInfoPanelFrame(frame)
+	return frame
+
+// detects if this frame is visible if it is the given function which should return a text which is the now wanted tooltipText.
+public function unitInfoPanelAddTooltipListener(framehandle frame, code func)
+	tooltipListenerCount = tooltipListenerCount + 1
+	tooltipListener[tooltipListenerCount] = frame
+	tooltipListenerAction[tooltipListenerCount] = CreateTrigger()
+	TriggerAddCondition(tooltipListenerAction[tooltipListenerCount], Filter(func))         
+
+
+function unitInfoAddTooltip(framehandle parent, framehandle frame) returns framehandle
+	framehandle toolTip
+	framehandle but
+	but = BlzCreateSimpleFrame("EmptySimpleButton", parent, 0)
+	toolTip = BlzCreateFrameByType("SIMPLEFRAME", "", but, "", 0)
+
+ 	but.setAllPoints(frame)
+	but.setTooltip(toolTip)
+	but.setLevel(9)
+	toolTip.hide()
+
+	return toolTip
+
+
+function unitInfoAddTooltipEx(framehandle parent, framehandle frame, code func)
+	unitInfoPanelAddTooltipListener(unitInfoAddTooltip(parent, frame), func)
+
+
+function unitInfoCreateCustomInfo(framehandle parent, string label, string texture, code tooltipCode) returns integer
+	createContext 		= createContext + 1
+	unitInfoInfoFrame   = BlzCreateSimpleFrame("SimpleInfoPanelIconRank", parent, createContext)
+	unitInfoIconFrame   = BlzGetFrameByName("InfoPanelIconBackdrop", createContext)
+	unitInfoLabelFrame  = BlzGetFrameByName("InfoPanelIconLabel", createContext)
+	unitInfoTextFrame   = BlzGetFrameByName("InfoPanelIconValue", createContext)
+	
+	unitInfoLabelFrame.setText(label)
+
+	unitInfoTextFrame.setText("xxx")
+	unitInfoIconFrame.setTexture(texture, 0, false)
+	unitInfoIconFrame.clearAllPoints()
+	unitInfoIconFrame.setSize(0.028, 0.028)
+
+	if tooltipCode != null 
+		unitInfoAddTooltipEx(unitInfoInfoFrame, unitInfoIconFrame, tooltipCode)
+	
+	return createContext
+
+
+function unitInfoPanelSetPage(integer newPage)
+	activeIndex = IMinBJ(panelsCount, IMaxBJ(0, newPage))
+	panels[activeIndex].hide()
+	panelsFrame[activeIndex].hide()
+	panels[activeIndex].show()
+	panelsFrame[activeIndex].show()
+
+function nextPanel()
+	activeIndex = activeIndex + 1
+	if activeIndex > panelsCount 
+		activeIndex = 1
+
+	if panelsCondition[activeIndex] != null and not panelsCondition[activeIndex].evaluate()
+		nextPanel()
+
+function prevPanel()
+	activeIndex = activeIndex - 1
+	if activeIndex < 1 
+		activeIndex = panelsCount
+
+	if panelsCondition[activeIndex] != null and not panelsCondition[activeIndex].evaluate()
+		prevPanel()
+
+
+function update()
+	bool found = false
+	integer loopA = tooltipListenerCount
+	integer useAblePages = 1
+
+	GetLocalPlayer().unitInfoGetUnit()
+
+	if unitInfo.isVisible()
+		while(loopA >= 0)
+			if tooltipListener[loopA].isVisible()           
+				unitInfoTooltipFrame = tooltipListener[loopA]
+				tooltipListenerAction[loopA].evaluate()   
+				tooltipText.setText(unitInfoTooltipText)
+				found = true
+				break
+			
+			loopA = loopA - 1
+	
+	tooltipBox.setVisible(found)
+
+	if unitInfoUnit != null
+		loopA = panelsCount
+		while(loopA >= 0)
+			if panelsCondition[loopA].evaluate()                  
+				useAblePages = useAblePages + 1
+			
+			loopA = loopA - 1
+
+		BlzFrameSetVisible(pageDown, useAblePages > 1)
+		BlzFrameSetVisible(pageUp, useAblePages > 1)
+
+		if panelsCondition[activeIndex] != null and not TriggerEvaluate(panelsCondition[activeIndex]) 
+			panels[activeIndex].hide()
+			panelsFrame[activeIndex].hide()
+
+			nextPanel()
+
+			panels[activeIndex].show()
+			panelsFrame[activeIndex].show()
+
+	TriggerEvaluate(updates)        
+
+function pageButtonAction()
+	if GetTriggerPlayer() == GetLocalPlayer()
+		panels[activeIndex].hide() 
+		panelsFrame[activeIndex].hide()
+		if BlzGetTriggerFrame() == pageUp 
+			nextPanel()
+		else
+			prevPanel()
+
+		panels[activeIndex].show() 
+		panelsFrame[activeIndex].show()
+
+public function onInfoInit()
+	unitInfo = BlzGetFrameByName("SimpleInfoPanelUnitDetail", 0)
+	parent   = BlzCreateFrameByType("SIMPLEFRAME", "", unitInfo, "", 0)
+	pageUp   = BlzCreateSimpleFrame("UnitInfoSimpleIconButtonUp", unitInfo, 0)
+	pageDown = BlzCreateSimpleFrame("UnitInfoSimpleIconButtonDown", unitInfo, 0)
+	
+	pageUp.setAbsPoint(FRAMEPOINT_BOTTOMLEFT, 0.282, 0.08)
+	
+	BlzTriggerRegisterFrameEvent(buttonTrigger, pageUp, FRAMEEVENT_CONTROL_CLICK)
+	BlzTriggerRegisterFrameEvent(buttonTrigger, pageDown, FRAMEEVENT_CONTROL_CLICK)
+	panels[1] = parent
+
+	BlzGetFrameByName("SimpleInfoPanelIconDamage", 0).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconDamage", 1).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconArmor" , 2).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconRank"  , 3).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconFood"  , 4).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconGold"  , 5).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconHero"  , 6).setParent(parent)
+	BlzGetFrameByName("SimpleInfoPanelIconAlly"  , 7).setParent(parent)
+
+
+	tooltipBox = BlzCreateFrame("CustomUnitInfoTextBox", BlzGetFrameByName("ConsoleUIBackdrop", 0), 0, 0)
+
+	tooltipText = BlzCreateFrame("CustomUnitInfoText", tooltipBox, 0, 0)
+
+	tooltipText.setAbsPoint(FRAMEPOINT_BOTTOMRIGHT, 0.79, 0.18)
+	tooltipBox.setSize(0.275, 0)
+	tooltipBox.setPoint(FRAMEPOINT_TOPLEFT, tooltipText, FRAMEPOINT_TOPLEFT, -0.01, 0.01)
+	tooltipBox.setPoint(FRAMEPOINT_BOTTOMRIGHT, tooltipText, FRAMEPOINT_BOTTOMRIGHT, 0.005, -0.01)
+
+	tooltipBox.show()
+	
+	TimerStart(updateTimer, 0.05, true, function update)
+
+init
+	TriggerAddAction(buttonTrigger, function pageButtonAction)
