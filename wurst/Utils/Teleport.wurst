@@ -80,4 +80,8 @@ function makeAllPortalsRed()
 init
 	makeAllPortalsRed()
 
-	//new Teleport(gg_unit_ncop_0006, gg_unit_ncop_0012)
+	new Teleport(gg_unit_ncop_0006, gg_unit_ncop_0124)
+	new Teleport(gg_unit_ncop_0000, gg_unit_ncop_0028)
+	new Teleport(gg_unit_ncop_0032, gg_unit_ncop_0123)
+	new Teleport(gg_unit_ncop_0133, gg_unit_ncop_0126)
+	

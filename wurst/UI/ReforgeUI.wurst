@@ -1,7 +1,5 @@
 package ReforgeUI
 
-import LinkedList
-import ClosureEvents
 import ClosureTimers
 
 
@@ -171,10 +169,10 @@ public function onInit()
     // Start re-arranging the UI proper
         
     if FLAG        
-        enableUIAutoPosition(false)
+		enableUIAutoPosition(false)
 		//getFrame("ConsoleUI", 0)
 		//..setAbsPoint(FRAMEPOINT_TOPLEFT, 0.0, 0.6265)
-        // do after a delay because SimpleFrames are finicky and the HP/MANA frames don't exist on init.
+		// do after a delay because SimpleFrames are finicky and the HP/MANA frames don't exist on init.
         doAfter(.3) ->
 
             // ... then bring every element back one by one, repositioning and rescaling as needed

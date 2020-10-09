@@ -5,9 +5,14 @@ import ClosureTimers
 
 init
 	doAfter(0) -> 	
-		cinema.setSky(Sky.summer)
-		cinema.fadeOut(0)
-		StopMusicBJ( false )
+		Cinema.setSky(Sky.summer)
+		Cinema.fadeOut(0)
+		SetAmbientDaySound("")
+    	SetAmbientNightSound("")
+		ClearMapMusic()
+		ClearMapMusicBJ(  )
+		EndThematicMusicBJ(  )
+		EnableDawnDusk( false )
 		PlayMusic( gg_snd_BloodElfTheme )
 		SetPlayerAllianceStateBJ( Player(0), Player(3), bj_ALLIANCE_ALLIED )
 		SetPlayerAllianceStateBJ( Player(1), Player(3), bj_ALLIANCE_ALLIED )

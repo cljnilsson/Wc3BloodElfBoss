@@ -1,7 +1,5 @@
 package info
 
-import ClosureTimers
-
 framehandle array panels
 framehandle array panelsFrame
 integer panelsCount = 1

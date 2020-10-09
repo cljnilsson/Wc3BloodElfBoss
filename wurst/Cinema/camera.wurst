@@ -5,7 +5,7 @@ player localPlayer = GetLocalPlayer()
 function player.isLocalPlayer() returns boolean
     return this == localPlayer
     
-public class camera
+public class Camera
     static function pan(player p, vec2 target, real duration)
         if(p.isLocalPlayer())
             PanCameraToTimed(target.x, target.y, duration)

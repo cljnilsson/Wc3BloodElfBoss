@@ -3,8 +3,6 @@ package rainOfX
 import Fx
 import LinkedList
 import LinkedListModule
-import ClosureTimers
-import RegisterEvents
 
 class RainOfX
     use LinkedListModule

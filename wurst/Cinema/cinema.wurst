@@ -2,7 +2,6 @@ package cinema
 
 import TimerUtils
 import cinemaHelpers
-import Colors
 
 force f = bj_FORCE_PLAYER[0] //Defaults to only work on player 1
 
@@ -26,13 +25,13 @@ public enum Filter
     fall
 
 function Filter.convert() returns colorA
-    colorA toReturn
-    switch this
-        case Filter.dark
-            toReturn = colorA(20, 20, 20, 50)
-        case Filter.day
-            toReturn = colorA(65, 65, 65, 50)
-        case Filter.fall
+	colorA toReturn
+	switch this
+		case Filter.dark
+			toReturn = colorA(20, 20, 20, 50)
+		case Filter.day
+			toReturn = colorA(65, 65, 65, 50)
+		case Filter.fall
 			toReturn = colorA(100, 60, 20, 90)
 
     lastFilter = toReturn
@@ -62,7 +61,7 @@ function Sky.toString() returns string
 
     return toReturn
         
-public class cinema
+public class Cinema
     static function setSky(Sky sky)
         SetSkyModel(sky.toString())
 

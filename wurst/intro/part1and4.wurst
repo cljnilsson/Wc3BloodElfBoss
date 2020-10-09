@@ -32,13 +32,36 @@ function cleanup()
 
 	g.destr()
 
+function startGame()
+	let g = GetUnitsOfPlayerAll(players[0])
+
+	for unit u in g
+		u.remove()
+	
+	g.destr()
+
+	Cinema.off()
+	StopMusic(true)
+	ResetToGameCamera(0)
+
+	createUnit(players[0], 'uktg', gg_rct_start.getCenter(), angle(0))
+	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
+
+	players[0].panCameraTo(gg_rct_start.getCenter())
+	//SetCameraFieldForPlayer(players[0], CAMERA_FIELD_ROTATION, 270, 0)
+	doAfter(1) -> 
+		Cinema.fadeIn(2)
+
 function throneRoomTalk()
 	let counter = Scene.current.counter
 	switch counter
 		case 1
 			gg_cam_Camera_006.apply(0)
 			gg_cam_Camera_006.setAttribute(attribute.TARGET_DISTANCE, 1500, 21)
-			cinema.fadeIn(0)
+			king.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
+			archer.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
+			captain.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
+			Cinema.fadeIn(0)
 			king.talk("The scourge has reached the inner city. How is the evacuation proceeding?", 4)
 		case 2
 			king.lookAt(archer)
@@ -74,16 +97,16 @@ function throneRoomTalk()
 			captain.lookAt(archer)
 			archer.talk("You might have a chance against Arthas but he is not alone, whatever honor he had is no longer present. He won't fight you fairly one on one.",  8)
 		case 10
-			cinema.fadeOut(1)
+			Cinema.fadeOut(1)
 			doAfter(1) -> 
 				gg_cam_Camera_007.apply(0)
 				CinematicFadeBJ( bj_CINEFADETYPE_FADEOUT, 1, "ReplaceableTextures\\CameraMasks\\HazeAndFogFilter_Mask.blp", 0, 0, 0, 0 )
 				doAfter(4) -> 
-					cinema.fadeOut(1)
+					Cinema.fadeOut(1)
 					doAfter(1) -> 
 						gg_cam_Camera_008.apply(0)
 						gg_cam_Camera_008.setAttribute(attribute.ROTATION, 157, 40)
-						cinema.fadeIn(1)
+						Cinema.fadeIn(1)
 			king.talk("I've seen him. He is not my equal",  6)
 			// shade sound?
 		case 11
@@ -99,6 +122,8 @@ function throneRoomTalk()
 		case 14
 			captain.lookAt(king)
 			archer.lookAt(king)
+			gg_cam_Camera_009.apply(0)
+			gg_cam_Camera_010.apply(35)
 			king.talk("I've had a vision, years into the future. I saw the Sunwell whole. I do not know of the events leading up to this, but regardless of our losses I have faith that our people will prevail in the end.",  10)
 		case 15
 			archer.talk("But--",  2)
@@ -107,8 +132,8 @@ function throneRoomTalk()
 			archer.lookAt(king)
 			king.talk("End of discussion. Jennalla, return to the front lines and make them fall back slowly towards the docks.",  7)
 		case 17
-			archer.talk("As you wish, my lord.",  3) // move away
 			archer.issuePointOrder("move", gg_rct_exitthroneroom.getCenter())
+			archer.talk("As you wish, my lord.",  3) // move away
 		case 18
 			captain.lookAt(king)
 			king.talk("As for you, Thalorien. Make sure my son is on one of the ships, no matter what. Tell him it is possibly my final will.",  7)
@@ -119,9 +144,12 @@ function throneRoomTalk()
 		default
 			destroy Scene.current
 			print("End of throne scene!")
+			Cinema.fadeOut(1)
+			doAfter(1) -> 	
+				startGame()
 
 function part4()
-	cinema.fadeOut(2)
+	Cinema.fadeOut(2)
 	doAfter(2) -> 
 		RealisticPrint.log("The dread scar left behind Arthas' army only goes in one direction")
 		gg_trg_remove_civilians.disable()
@@ -129,15 +157,15 @@ function part4()
 		cleanup()
 		gg_cam_Camera_005.apply(0)
 		doAfter(4) -> 
-			cinema.fadeIn(2)
+			Cinema.fadeIn(2)
 			doAfter(2) -> 
-				cinema.fadeOut(2)
+				Cinema.fadeOut(2)
 				StopMusic(true)
 				doAfter(2) ->
 					gg_cam_Camera_006.apply(0)
 					PlayMusic( gg_snd_Anduins_Theme)
-					cinema.fadeIn(2)
-					doAfter(1) -> 
+					Cinema.fadeIn(2)
+					doAfter(1) ->
 						throneRoom.start()
 
 function part1()
@@ -148,16 +176,11 @@ init
 	RealisticPrint.log("The following map is based on official lore, but is not perfectly accurate.")	
 	doAfter(6) -> 
 		RealisticPrint.log("Silvermoon, during Arthas' invasion.")
-		cinema.fadeIn(0)
+		Cinema.fadeIn(0)
 
 	throneRoom = function throneRoomTalk.newScene()
 
-	/*doAfter(10) -> 
-		cinema.on()
-		StopMusic(false)
-		ClearMapMusic()
-		PlayMusic(gg_snd_Anduins_Theme)
-		throneRoom.start()*/
+	startGame()
 
 	CreateTrigger()
 	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
