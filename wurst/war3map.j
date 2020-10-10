@@ -70,7 +70,6 @@ globals
     sound                   gg_snd_RollingThunder1     = null
     sound                   gg_snd_DoorSlam1           = null
     string                  gg_snd_BloodElfTheme
-    string                  gg_snd_Why_Do_We_Fight
     string                  gg_snd_Anduins_Theme
     string                  gg_snd_Fire_Ash_And_Dust
     sound                   gg_snd_LightningBolt       = null
@@ -108,6 +107,16 @@ globals
     unit                    gg_unit_ncop_0124          = null
     unit                    gg_unit_ncop_0028          = null
     unit                    gg_unit_ncop_0000          = null
+    unit                    gg_unit_ncop_0032          = null
+    unit                    gg_unit_ncop_0123          = null
+    unit                    gg_unit_ncop_0126          = null
+    unit                    gg_unit_ncop_0133          = null
+    rect                    gg_rct_Region_026          = null
+    rect                    gg_rct_Region_027          = null
+    string                  gg_snd_Lothar
+    string                  gg_snd_Why_Do_We_Fight
+    trigger                 gg_trg_music1              = null
+    trigger                 gg_trg_music2              = null
 endglobals
 
 function InitGlobals takes nothing returns nothing
@@ -152,7 +161,6 @@ function InitSounds takes nothing returns nothing
     call SetSoundDuration( gg_snd_DoorSlam1, 485 )
     call SetSoundVolume( gg_snd_DoorSlam1, 50 )
     set gg_snd_BloodElfTheme = "BloodElfTheme"
-    set gg_snd_Why_Do_We_Fight = "music/Why Do We Fight.mp3"
     set gg_snd_Anduins_Theme = "music/Anduins Theme.mp3"
     set gg_snd_Fire_Ash_And_Dust = "music/Fire Ash And Dust.mp3"
     set gg_snd_LightningBolt = CreateSound( "Abilities/Spells/Orc/LightningBolt/LightningBolt.flac", false, false, true, 1, 1, "SpellsEAX" )
@@ -160,6 +168,8 @@ function InitSounds takes nothing returns nothing
     call SetSoundDuration( gg_snd_LightningBolt, 2136 )
     call SetSoundChannel( gg_snd_LightningBolt, 17 )
     call SetSoundVolume( gg_snd_LightningBolt, 70 )
+    set gg_snd_Lothar = "music/Lothar.mp3"
+    set gg_snd_Why_Do_We_Fight = "music/Why Do We Fight.mp3"
 endfunction
 
 //***************************************************************************
@@ -247,6 +257,7 @@ function CreateUnitsForPlayer1 takes nothing returns nothing
 
     set gg_unit_narg_0040 = BlzCreateUnitWithSkin( p, 'narg', 832.2, -2124.9, 270.000, 'narg' )
     set gg_unit_narg_0051 = BlzCreateUnitWithSkin( p, 'narg', 1077.3, -2136.1, 270.000, 'narg' )
+    set u = BlzCreateUnitWithSkin( p, 'Hssa', 15825.6, -6897.7, 262.607, 'Hssa' )
 endfunction
 
 //===========================================================================
@@ -275,7 +286,6 @@ function CreateUnitsForPlayer3 takes nothing returns nothing
     set u = BlzCreateUnitWithSkin( p, 'ugho', 8985.5, -193.6, 28.831, 'ugho' )
     set u = BlzCreateUnitWithSkin( p, 'ugho', 9264.2, -158.2, 352.046, 'ugho' )
     set u = BlzCreateUnitWithSkin( p, 'ugho', 8742.1, -526.0, 52.557, 'ugho' )
-    set u = BlzCreateUnitWithSkin( p, 'ugho', 8972.2, -867.6, 43.734, 'ugho' )
     set u = BlzCreateUnitWithSkin( p, 'ugho', 9313.7, -777.2, 63.034, 'ugho' )
     set u = BlzCreateUnitWithSkin( p, 'ugho', 9694.2, -410.5, 92.726, 'ugho' )
     set u = BlzCreateUnitWithSkin( p, 'ugho', 9769.3, -236.6, 98.175, 'ugho' )
@@ -338,11 +348,12 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     set gg_unit_ncop_0000 = BlzCreateUnitWithSkin( p, 'ncop', -1920.0, 4992.0, 270.000, 'ncop' )
     set gg_unit_ncop_0006 = BlzCreateUnitWithSkin( p, 'ncop', -576.0, 5504.0, 270.000, 'ncop' )
     set gg_unit_ncop_0028 = BlzCreateUnitWithSkin( p, 'ncop', -1024.0, 4992.0, 270.000, 'ncop' )
-    set u = BlzCreateUnitWithSkin( p, 'ncop', -2560.0, 5504.0, 270.000, 'ncop' )
-    set u = BlzCreateUnitWithSkin( p, 'ncop', -2560.0, 6400.0, 270.000, 'ncop' )
+    set gg_unit_ncop_0032 = BlzCreateUnitWithSkin( p, 'ncop', -2560.0, 5504.0, 270.000, 'ncop' )
+    set gg_unit_ncop_0123 = BlzCreateUnitWithSkin( p, 'ncop', -2560.0, 6400.0, 270.000, 'ncop' )
     set gg_unit_ncop_0124 = BlzCreateUnitWithSkin( p, 'ncop', -576.0, 6400.0, 270.000, 'ncop' )
     set u = BlzCreateUnitWithSkin( p, 'ntn3', -96.0, 5536.0, 270.000, 'ntn3' )
-    set u = BlzCreateUnitWithSkin( p, 'ncop', -128.0, 6720.0, 270.000, 'ncop' )
+    set gg_unit_ncop_0126 = BlzCreateUnitWithSkin( p, 'ncop', -128.0, 6720.0, 270.000, 'ncop' )
+    set gg_unit_ncop_0133 = BlzCreateUnitWithSkin( p, 'ncop', 15808.0, -10432.0, 270.000, 'ncop' )
 endfunction
 
 //===========================================================================
@@ -421,10 +432,12 @@ function CreateRegions takes nothing returns nothing
     set gg_rct_lobby = Rect( -4096.0, 3680.0, 672.0, 8000.0 )
     set we = AddWeatherEffect( gg_rct_lobby, 'FDwl' )
     call EnableWeatherEffect( we, true )
-    call SetSoundPosition( gg_snd_RollingThunder1, -1712.0, 5840.0, -256.0 )
-    call RegisterStackedSound( gg_snd_RollingThunder1, true, 4768.0, 4320.0 )
     set gg_rct_ghosts = Rect( -2560.0, 5088.0, -768.0, 6624.0 )
     set gg_rct_start = Rect( -576.0, 4928.0, -384.0, 5088.0 )
+    set gg_rct_Region_026 = Rect( 12352.0, -11776.0, 19392.0, -10048.0 )
+    set we = AddWeatherEffect( gg_rct_Region_026, 'FDwl' )
+    call EnableWeatherEffect( we, true )
+    set gg_rct_Region_027 = Rect( 12288.0, -11712.0, 19424.0, -4992.0 )
 endfunction
 
 //***************************************************************************
@@ -612,6 +625,57 @@ function InitTrig_ghostspawn takes nothing returns nothing
 endfunction
 
 //===========================================================================
+// Trigger: music1
+//===========================================================================
+function Trig_music1_Conditions takes nothing returns boolean
+    if ( not ( GetOwningPlayer(GetTriggerUnit()) == Player(0) ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_music1_Actions takes nothing returns nothing
+    call DisableTrigger( GetTriggeringTrigger() )
+    call EnableTrigger( gg_trg_music2 )
+    call StopMusicBJ( true )
+    call PlayThematicMusicBJ( "music\\Lothar.mp3" )
+endfunction
+
+//===========================================================================
+function InitTrig_music1 takes nothing returns nothing
+    set gg_trg_music1 = CreateTrigger(  )
+    call TriggerRegisterEnterRectSimple( gg_trg_music1, gg_rct_lobby )
+    call TriggerAddCondition( gg_trg_music1, Condition( function Trig_music1_Conditions ) )
+    call TriggerAddAction( gg_trg_music1, function Trig_music1_Actions )
+endfunction
+
+//===========================================================================
+// Trigger: music2
+//===========================================================================
+function Trig_music2_Conditions takes nothing returns boolean
+    if ( not ( GetOwningPlayer(GetTriggerUnit()) == Player(0) ) ) then
+        return false
+    endif
+    return true
+endfunction
+
+function Trig_music2_Actions takes nothing returns nothing
+    call DisableTrigger( GetTriggeringTrigger() )
+    call EnableTrigger( gg_trg_music1 )
+    call StopMusicBJ( true )
+    call PlayThematicMusicBJ( "music\\Lothar.mp3" )
+endfunction
+
+//===========================================================================
+function InitTrig_music2 takes nothing returns nothing
+    set gg_trg_music2 = CreateTrigger(  )
+    call DisableTrigger( gg_trg_music2 )
+    call TriggerRegisterEnterRectSimple( gg_trg_music2, gg_rct_Region_027 )
+    call TriggerAddCondition( gg_trg_music2, Condition( function Trig_music2_Conditions ) )
+    call TriggerAddAction( gg_trg_music2, function Trig_music2_Actions )
+endfunction
+
+//===========================================================================
 // Trigger: vars
 //===========================================================================
 function Trig_vars_Actions takes nothing returns nothing
@@ -640,6 +704,10 @@ function Trig_vars_Actions takes nothing returns nothing
     call KillUnit( gg_unit_ncop_0124 )
     call KillUnit( gg_unit_ncop_0028 )
     call KillUnit( gg_unit_ncop_0000 )
+    call KillUnit( gg_unit_ncop_0032 )
+    call KillUnit( gg_unit_ncop_0123 )
+    call KillUnit( gg_unit_ncop_0133 )
+    call KillUnit( gg_unit_ncop_0126 )
     // ---
     call MoveRectToLoc( gg_rct_archerpos1, GetRectCenter(GetPlayableMapRect()) )
     call MoveRectToLoc( gg_rct_archerpos2, GetRectCenter(GetPlayableMapRect()) )
@@ -655,7 +723,6 @@ function InitTrig_vars takes nothing returns nothing
     set gg_trg_vars = CreateTrigger(  )
     call TriggerAddAction( gg_trg_vars, function Trig_vars_Actions )
 endfunction
-
 
 //===========================================================================
 // Trigger: Untitled Trigger 001
@@ -1039,6 +1106,8 @@ endfunction
 //===========================================================================
 function InitCustomTriggers takes nothing returns nothing
     call InitTrig_ghostspawn(  )
+    call InitTrig_music1(  )
+    call InitTrig_music2(  )
     call InitTrig_vars(  )
     call InitTrig_Untitled_Trigger_001(  )
     call InitTrig_civilian_spawner(  )
@@ -1091,7 +1160,7 @@ endfunction
 
 //===========================================================================
 function main takes nothing returns nothing
-    call SetCameraBounds( -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 11520.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 11520.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -3584.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM) )
+    call SetCameraBounds( -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), -11776.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM), 19712.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), -3328.0 + GetCameraMargin(CAMERA_MARGIN_LEFT), 11264.0 - GetCameraMargin(CAMERA_MARGIN_TOP), 19712.0 - GetCameraMargin(CAMERA_MARGIN_RIGHT), -11776.0 + GetCameraMargin(CAMERA_MARGIN_BOTTOM) )
     call SetDayNightModels( "Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl", "Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl" )
     call SetTerrainFogEx( 0, 1000.0, 9000.0, 0.500, 0.502, 0.502, 0.502 )
     call SetWaterBaseColor( 0, 0, 0, 255 )

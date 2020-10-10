@@ -179,8 +179,8 @@ init
 		Cinema.fadeIn(0)
 
 	throneRoom = function throneRoomTalk.newScene()
-
-	startGame()
+	doAfter(0) -> 
+		startGame()
 
 	CreateTrigger()
 	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
