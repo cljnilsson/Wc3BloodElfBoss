@@ -1,14 +1,11 @@
 package control
 
 import ClosureTimers
-
-import info
 import ReforgeUI
-import stats
 
-init
+public function uiInit()
 	BlzLoadTOCFile("UI/UnitInfoPanels.toc")
-	/*doAfter(2) -> 
+	doAfter(1) -> 
 		group g = GetUnitsOfPlayerAll(players[0])
 		unit uu = g.getRandomUnit()
 		g.destr()
@@ -16,6 +13,5 @@ init
 		doAfter(1) -> 
 			onInit()
 			doAfter(0.35) -> 
-				uu.issueImmediateOrder("stop") // forces refresh of cmd buttons	
-			//onInfoInit()
-			//onStatsInit()*/
+				uu.issueImmediateOrder("stop") // forces refresh of cmd buttons
+				players[0].clearSelection()	

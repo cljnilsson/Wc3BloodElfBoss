@@ -7,6 +7,8 @@ import cinemaHelpers
 import scene
 import Camerasetup
 
+import control
+
 unit king = gg_unit_Hssa_0059
 unit archer = gg_unit_Hjnd_0061
 unit captain = gg_unit_Hddt_0060
@@ -44,11 +46,15 @@ function startGame()
 	StopMusic(true)
 	ResetToGameCamera(0)
 
-	createUnit(players[0], 'uktg', gg_rct_start.getCenter(), angle(0))
+	createUnit(players[0], 'Uktl', gg_rct_start.getCenter(), angle(0))
+	..setLevel(4, false)
 	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
+	..setLevel(4, false)
 
 	players[0].panCameraTo(gg_rct_start.getCenter())
-	//SetCameraFieldForPlayer(players[0], CAMERA_FIELD_ROTATION, 270, 0)
+	
+	uiInit()
+
 	doAfter(1) -> 
 		Cinema.fadeIn(2)
 
@@ -58,9 +64,6 @@ function throneRoomTalk()
 		case 1
 			gg_cam_Camera_006.apply(0)
 			gg_cam_Camera_006.setAttribute(attribute.TARGET_DISTANCE, 1500, 21)
-			king.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
-			archer.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
-			captain.addEffect("Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl", "overhead")
 			Cinema.fadeIn(0)
 			king.talk("The scourge has reached the inner city. How is the evacuation proceeding?", 4)
 		case 2
