@@ -1,0 +1,14 @@
+package unholyarts
+
+import DamageEvent
+
+constant id = 'A005'
+
+init
+	DamageEvent.addListener() ->
+		let u = DamageEvent.getSource()
+		if DamageEvent.getType() == ATTACK and u.hasAbility(id)
+			print("This damage is from a unit's attack.")
+			DamageEvent.getTarget().addHP(DamageEvent.getAmount())
+			u.addMana(5)
+			u.addEffect("Abilities\\Spells\\Items\\AIma\\AImaTarget.mdl", "origin")

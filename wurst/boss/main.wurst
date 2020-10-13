@@ -1,0 +1,67 @@
+package main
+
+import ClosureTimers
+import LinkedList
+
+unit b = gg_unit_Hssa_0073
+
+public Boss BEBoss
+
+function unit.getNearUnits() returns LinkedList<unit>
+	let l = GetUnitLoc(this)
+	let g = GetUnitsInRangeOfLocAll(9999, l)
+	let list = new LinkedList<unit>()
+
+	for unit u in g
+		list.add(u)
+
+	return list
+
+
+function unit.getNearestEnemyUnit() returns unit
+	let list = this.getNearUnits()
+	real leader = 9999
+	unit winner = null
+
+	for unit u in list
+		if u.isEnemyOf(this)
+			let dist = u.getPos().distanceTo(this.getPos())
+			if dist < leader
+				leader = dist
+				winner = u
+
+	destroy list
+
+	return winner
+
+class Boss
+	unit boss
+	vec2 pos
+
+	construct(unit u)
+		boss = u
+		pos = boss.getPos()
+	
+	private function update()
+		print("Running boss script!")
+
+	function start()
+		reset()
+
+		doPeriodically(5) (CallbackPeriodic cb) ->
+			b.addMana(1)
+
+		doPeriodically(1) (CallbackPeriodic cb) ->
+			update()
+
+		let target = boss.getNearestEnemyUnit()
+		boss.issueTargetOrder("attack", target)
+		print("Targeting: " + target.getName())
+
+	private function reset()
+		boss.setHP(boss.getMaxHP())
+		boss.setMana(0)
+		boss.setPos(pos)
+
+init
+	BEBoss = new Boss(b)

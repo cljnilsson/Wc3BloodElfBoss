@@ -7,8 +7,6 @@ import cinemaHelpers
 import scene
 import Camerasetup
 
-import control
-
 unit king = gg_unit_Hssa_0059
 unit archer = gg_unit_Hjnd_0061
 unit captain = gg_unit_Hddt_0060
@@ -34,26 +32,32 @@ function cleanup()
 
 	g.destr()
 
-function startGame()
-	let g = GetUnitsOfPlayerAll(players[0])
+function player.removeAllunits()
+	let g = GetUnitsOfPlayerAll(this)
 
 	for unit u in g
 		u.remove()
 	
 	g.destr()
 
+function startGame()
+	players[0].removeAllunits()
+	players[1].removeAllunits()
+
 	Cinema.off()
 	StopMusic(true)
 	ResetToGameCamera(0)
 
-	createUnit(players[0], 'Uktl', gg_rct_start.getCenter(), angle(0))
+	createUnit(players[1], 'Uktl', gg_rct_start.getCenter(), angle(0))
 	..setLevel(4, false)
 	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
 	..setLevel(4, false)
 
+	if players[1].getController() != MAP_CONTROL_USER
+		SetPlayerAllianceBJ(players[0], ALLIANCE_SHARED_CONTROL, true, players[1])
+		SetPlayerAllianceBJ(players[1], ALLIANCE_SHARED_CONTROL, true, players[0])
+
 	players[0].panCameraTo(gg_rct_start.getCenter())
-	
-	uiInit()
 
 	doAfter(1) -> 
 		Cinema.fadeIn(2)
@@ -188,8 +192,9 @@ init
 	CreateTrigger()
 	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
 	..addAction() ->
-		unit u = GetTriggerUnit()
-		int id = u.getTypeId()
+		let u = GetTriggerUnit()
+		let id = u.getTypeId()
+
 		if id == 'narg'
 			GetTriggeringTrigger().destr()
 			doAfter(1) -> 

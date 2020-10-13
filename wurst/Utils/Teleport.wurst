@@ -2,6 +2,9 @@ package Teleport
 
 import ClosureTimers
 import HashMap
+import EventHelper
+
+import main //this map only
 
 class Teleport
 
@@ -62,6 +65,12 @@ class Teleport
 			fportal.setColor((0).toPlayerColor())
 			tportal.setColor((0).toPlayerColor())
 
+	function isEnabled() returns bool
+		return hash.get(initial) == true
+
+	function isDisabled() returns bool
+		return hash.get(initial) == false
+
 	ondestroy
 		hash.remove(initial)
 		hash.remove(reverse)
@@ -77,11 +86,33 @@ function makeAllPortalsRed()
 
 	g.destr()
 
+public Teleport t
+
 init
-	makeAllPortalsRed()
+	makeAllPortalsRed() // To easily show non-linked portals
 
 	new Teleport(gg_unit_ncop_0006, gg_unit_ncop_0124)
 	new Teleport(gg_unit_ncop_0000, gg_unit_ncop_0028)
 	new Teleport(gg_unit_ncop_0032, gg_unit_ncop_0123)
-	new Teleport(gg_unit_ncop_0133, gg_unit_ncop_0126)
+	t = new Teleport(gg_unit_ncop_0133, gg_unit_ncop_0126)
+
+	CreateTrigger()
+	..registerRectEnterEventSource(gg_rct_Region_027)
+	..addAction() ->
+		if t.isEnabled()
+			let u = GetTriggerUnit()
+			let o = u.getOwner()
+
+			if o == players[0] or o == players[1]
+				t.disable()
+
+				let p = o == players[0] ? players[1] : players[0]
+				let g = GetUnitsOfPlayerAll(p)
+				let random = g.getRandomUnit()
 	
+				g.destr()
+
+				random.setPos(u.getPos())
+
+				BEBoss.start()
+

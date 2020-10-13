@@ -81,7 +81,6 @@ globals
     trigger                 gg_trg_music1              = null
     trigger                 gg_trg_music2              = null
     trigger                 gg_trg_vars                = null
-    trigger                 gg_trg_Untitled_Trigger_001 = null
     trigger                 gg_trg_civilian_spawner    = null
     trigger                 gg_trg_remove_civilians    = null
     trigger                 gg_trg_undead_spawner      = null
@@ -117,6 +116,8 @@ globals
     unit                    gg_unit_ncop_0123          = null
     unit                    gg_unit_ncop_0124          = null
     unit                    gg_unit_ncop_0126          = null
+    trigger                 gg_trg_init                = null
+    unit                    gg_unit_Hssa_0073          = null
 endglobals
 
 function InitGlobals takes nothing returns nothing
@@ -255,7 +256,6 @@ function CreateUnitsForPlayer1 takes nothing returns nothing
 
     set gg_unit_narg_0040 = BlzCreateUnitWithSkin( p, 'narg', 832.2, -2124.9, 270.000, 'narg' )
     set gg_unit_narg_0051 = BlzCreateUnitWithSkin( p, 'narg', 1077.3, -2136.1, 270.000, 'narg' )
-    set u = BlzCreateUnitWithSkin( p, 'Hssa', 15878.4, -7925.4, 262.607, 'Hssa' )
 endfunction
 
 //===========================================================================
@@ -336,6 +336,17 @@ function CreateUnitsForPlayer3 takes nothing returns nothing
 endfunction
 
 //===========================================================================
+function CreateNeutralHostile takes nothing returns nothing
+    local player p = Player(PLAYER_NEUTRAL_AGGRESSIVE)
+    local unit u
+    local integer unitID
+    local trigger t
+    local real life
+
+    set gg_unit_Hssa_0073 = BlzCreateUnitWithSkin( p, 'Hssa', 15878.4, -7925.4, 262.610, 'Hssa' )
+endfunction
+
+//===========================================================================
 function CreateNeutralPassiveBuildings takes nothing returns nothing
     local player p = Player(PLAYER_NEUTRAL_PASSIVE)
     local unit u
@@ -385,6 +396,7 @@ endfunction
 function CreateAllUnits takes nothing returns nothing
     call CreateNeutralPassiveBuildings(  )
     call CreatePlayerBuildings(  )
+    call CreateNeutralHostile(  )
     call CreateNeutralPassive(  )
     call CreatePlayerUnits(  )
 endfunction
@@ -595,6 +607,20 @@ endfunction
 //***************************************************************************
 
 //===========================================================================
+// Trigger: init
+//===========================================================================
+function Trig_init_Actions takes nothing returns nothing
+    call CreateFogModifierRectBJ( true, Player(0), FOG_OF_WAR_VISIBLE, gg_rct_Region_027 )
+    call CreateFogModifierRectBJ( true, Player(1), FOG_OF_WAR_VISIBLE, gg_rct_Region_027 )
+endfunction
+
+//===========================================================================
+function InitTrig_init takes nothing returns nothing
+    set gg_trg_init = CreateTrigger(  )
+    call TriggerAddAction( gg_trg_init, function Trig_init_Actions )
+endfunction
+
+//===========================================================================
 // Trigger: ghostspawn
 //===========================================================================
 function Trig_ghostspawn_Actions takes nothing returns nothing
@@ -698,6 +724,8 @@ function Trig_vars_Actions takes nothing returns nothing
     call KillUnit( gg_unit_narg_0040 )
     call KillUnit( gg_unit_narg_0051 )
     // ---
+    call KillUnit( gg_unit_Hssa_0073 )
+    // ---
     call KillUnit( gg_unit_ncop_0006 )
     call KillUnit( gg_unit_ncop_0124 )
     call KillUnit( gg_unit_ncop_0028 )
@@ -714,6 +742,7 @@ function Trig_vars_Actions takes nothing returns nothing
     call MoveRectToLoc( gg_rct_3, GetRectCenter(GetPlayableMapRect()) )
     call MoveRectToLoc( gg_rct_exitthroneroom, GetRectCenter(GetPlayableMapRect()) )
     call MoveRectToLoc( gg_rct_start, GetRectCenter(GetPlayableMapRect()) )
+    call MoveRectToLoc( gg_rct_start, GetRectCenter(gg_rct_Region_027) )
 endfunction
 
 //===========================================================================
@@ -721,20 +750,6 @@ function InitTrig_vars takes nothing returns nothing
     set gg_trg_vars = CreateTrigger(  )
     call TriggerAddAction( gg_trg_vars, function Trig_vars_Actions )
 endfunction
-
-//===========================================================================
-// Trigger: Untitled Trigger 001
-//===========================================================================
-function Trig_Untitled_Trigger_001_Actions takes nothing returns nothing
-    call KillUnit( GroupPickRandomUnit(GetUnitsSelectedAll(Player(0))) )
-endfunction
-
-//===========================================================================
-function InitTrig_Untitled_Trigger_001 takes nothing returns nothing
-    set gg_trg_Untitled_Trigger_001 = CreateTrigger(  )
-    call TriggerAddAction( gg_trg_Untitled_Trigger_001, function Trig_Untitled_Trigger_001_Actions )
-endfunction
-
 
 //===========================================================================
 // Trigger: civilian spawner
@@ -1103,11 +1118,11 @@ endfunction
 
 //===========================================================================
 function InitCustomTriggers takes nothing returns nothing
+    call InitTrig_init(  )
     call InitTrig_ghostspawn(  )
     call InitTrig_music1(  )
     call InitTrig_music2(  )
     call InitTrig_vars(  )
-    call InitTrig_Untitled_Trigger_001(  )
     call InitTrig_civilian_spawner(  )
     call InitTrig_remove_civilians(  )
     call InitTrig_undead_spawner(  )
@@ -1124,6 +1139,7 @@ endfunction
 
 //===========================================================================
 function RunInitializationTriggers takes nothing returns nothing
+    call ConditionalTriggerExecute( gg_trg_init )
     call ConditionalTriggerExecute( gg_trg_ghostspawn )
 endfunction
 
