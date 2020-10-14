@@ -2,48 +2,61 @@ package main
 
 import ClosureTimers
 import LinkedList
+import unithelper
+
+import meteor
+import shackle
 
 unit b = gg_unit_Hssa_0073
 
 public Boss BEBoss
 
-function unit.getNearUnits() returns LinkedList<unit>
-	let l = GetUnitLoc(this)
-	let g = GetUnitsInRangeOfLocAll(9999, l)
-	let list = new LinkedList<unit>()
-
-	for unit u in g
-		list.add(u)
-
-	return list
-
-
-function unit.getNearestEnemyUnit() returns unit
-	let list = this.getNearUnits()
-	real leader = 9999
-	unit winner = null
-
-	for unit u in list
-		if u.isEnemyOf(this)
-			let dist = u.getPos().distanceTo(this.getPos())
-			if dist < leader
-				leader = dist
-				winner = u
-
-	destroy list
-
-	return winner
-
 class Boss
 	unit boss
 	vec2 pos
+	integer cooldown = 0
+	integer pcooldown = 0
+	boolean summoned = false
 
 	construct(unit u)
 		boss = u
 		pos = boss.getPos()
 	
 	private function update()
-		print("Running boss script!")
+		let mana = boss.getMana()
+
+		if mana >= 75 and summoned == false
+			createUnit(boss.getOwner(), 'hphx', boss.getPos(), angle(0))
+			summoned = true
+
+		if cooldown <= 0
+			if(mana > 5)
+				cooldown = 5
+				for i = 0 to 20
+					new Meteor(boss.getPos().polarOffset(angle(GetRandomDirectionDeg()), GetRandomReal(0, 1100)))
+
+			// seperate if to root one unit
+			if mana > 25
+				cooldown = 10
+				let list = boss.getPos().getNearEnemyUnitsEx(1100, boss)
+
+				for u in list
+					if u.isShackled()
+						list.remove(u)
+
+				if list.size() > 0
+					let target = list.getFirst()
+					new Shackle(target)
+		else
+			cooldown--
+
+		if pcooldown <= 0 and mana >= 50
+			let p = boss.getPos().polarOffset(angle(GetRandomDirectionDeg()), GetRandomReal(0, 1100))
+			createUnit(boss.getOwner(), 'hpxe', p, angle(0)).setTimedLife(10)
+			pcooldown = 15
+		else
+			pcooldown--
+
 
 	function start()
 		reset()

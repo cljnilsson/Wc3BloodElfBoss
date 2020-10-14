@@ -1,0 +1,31 @@
+package meteor
+
+import ClosureTimers
+import unithelper
+
+public class Meteor
+	private constant marker = "effects\\Void Rift II Orange.mdx"
+	private constant projectile = "effects\\Rain of Fire III.mdx"
+	private constant aoe = "effects\\Flamestrike II.mdx"
+
+	effect tm
+
+	construct(vec2 pos)
+		tm = addEffect(marker, pos)
+
+		doAfter(2) -> 
+			tm.destr()
+			addEffect(projectile, pos).destr()
+
+			doAfter(0.25) -> 
+				let list = pos.getNearUnitsEx(100)
+
+				addEffect(aoe, pos).destr()
+
+				for u in list
+					let o = u.getOwner()
+					if o == players[0] or o == players[1]
+						u.addHP(-100)
+
+				destroy list
+		

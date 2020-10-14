@@ -1,0 +1,9 @@
+package playerhelper
+
+public function player.removeAllunits()
+	let g = GetUnitsOfPlayerAll(this)
+
+	for unit u in g
+		u.remove()
+	
+	g.destr()

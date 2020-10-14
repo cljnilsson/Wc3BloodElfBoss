@@ -114,5 +114,10 @@ init
 
 				random.setPos(u.getPos())
 
+				random.setLife(random.getMaxHP())
+				random.setMana(random.getMaxMana())
+				u.setLife(u.getMaxHP())
+				u.setMana(u.getMaxMana())
+
 				BEBoss.start()
 

@@ -77,6 +77,7 @@ globals
     sound                   gg_snd_LightningBolt       = null
     string                  gg_snd_Lothar
     string                  gg_snd_Why_Do_We_Fight
+    trigger                 gg_trg_init                = null
     trigger                 gg_trg_ghostspawn          = null
     trigger                 gg_trg_music1              = null
     trigger                 gg_trg_music2              = null
@@ -96,6 +97,7 @@ globals
     unit                    gg_unit_Hddt_0060          = null
     unit                    gg_unit_Hssa_0059          = null
     unit                    gg_unit_ncop_0133          = null
+    unit                    gg_unit_Hssa_0073          = null
     unit                    gg_unit_Hjnd_0061          = null
     unit                    gg_unit_narg_0051          = null
     unit                    gg_unit_hsor_0031          = null
@@ -116,8 +118,7 @@ globals
     unit                    gg_unit_ncop_0123          = null
     unit                    gg_unit_ncop_0124          = null
     unit                    gg_unit_ncop_0126          = null
-    trigger                 gg_trg_init                = null
-    unit                    gg_unit_Hssa_0073          = null
+    destructable            gg_dest_LTe1_2576          = null
 endglobals
 
 function InitGlobals takes nothing returns nothing
@@ -171,6 +172,19 @@ function InitSounds takes nothing returns nothing
     call SetSoundVolume( gg_snd_LightningBolt, 70 )
     set gg_snd_Lothar = "music/Lothar.mp3"
     set gg_snd_Why_Do_We_Fight = "music/Why Do We Fight.mp3"
+endfunction
+
+//***************************************************************************
+//*
+//*  Destructable Objects
+//*
+//***************************************************************************
+
+function CreateAllDestructables takes nothing returns nothing
+    local destructable d
+    local trigger t
+    local real life
+    set gg_dest_LTe1_2576 = BlzCreateDestructableWithSkin( 'LTe1', 13824.0, -7872.0, 270.000, 0.900, 0, 'LTe1' )
 endfunction
 
 //***************************************************************************
@@ -612,6 +626,7 @@ endfunction
 function Trig_init_Actions takes nothing returns nothing
     call CreateFogModifierRectBJ( true, Player(0), FOG_OF_WAR_VISIBLE, gg_rct_Region_027 )
     call CreateFogModifierRectBJ( true, Player(1), FOG_OF_WAR_VISIBLE, gg_rct_Region_027 )
+    call SetDestructableInvulnerableBJ( gg_dest_LTe1_2576, true )
 endfunction
 
 //===========================================================================
@@ -1185,6 +1200,7 @@ function main takes nothing returns nothing
     call InitSounds(  )
     call CreateRegions(  )
     call CreateCameras(  )
+    call CreateAllDestructables(  )
     call CreateAllUnits(  )
     call InitBlizzard(  )
     call InitGlobals(  )

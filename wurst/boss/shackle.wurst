@@ -1,0 +1,40 @@
+package shackle
+
+import HashMap
+import ClosureEvents
+
+public function unit.isShackled() returns boolean
+	return Shackle.hash.get(this) != null
+
+public class Shackle
+	unit shackled
+	string shackleEffect = "Abilities\\Spells\\Human\\AerialShackles\\AerialShacklesTarget.mdl"
+	effect e
+
+	static let hash = new HashMap<unit, Shackle>()
+
+	construct(unit target)
+		shackled = target
+		target.setPropWindow(angle(0))
+		e = target.addEffect(shackleEffect, "chest")
+		hash.put(target, this)
+
+	ondestroy
+		hash.remove(shackled)
+		shackled.setPropWindow(shackled.getDefaultPropWindow())
+		e.destr()
+
+init
+
+constant id = 'AUfn'
+
+init
+	EventListener.add(EVENT_PLAYER_UNIT_SPELL_EFFECT) ->
+		if GetSpellAbilityId() == id
+			print("ice spell was cast")
+			let spell = Shackle.hash.get(GetSpellTargetUnit())
+			if spell != null
+				print("unit is indeed snared!")
+				destroy spell
+			else
+				print("unit is not snared!")

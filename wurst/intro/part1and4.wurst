@@ -6,6 +6,8 @@ import cinema
 import cinemaHelpers
 import scene
 import Camerasetup
+import playerhelper
+import unithelper
 
 unit king = gg_unit_Hssa_0059
 unit archer = gg_unit_Hjnd_0061
@@ -32,14 +34,6 @@ function cleanup()
 
 	g.destr()
 
-function player.removeAllunits()
-	let g = GetUnitsOfPlayerAll(this)
-
-	for unit u in g
-		u.remove()
-	
-	g.destr()
-
 function startGame()
 	players[0].removeAllunits()
 	players[1].removeAllunits()
@@ -48,10 +42,7 @@ function startGame()
 	StopMusic(true)
 	ResetToGameCamera(0)
 
-	createUnit(players[1], 'Uktl', gg_rct_start.getCenter(), angle(0))
-	..setLevel(4, false)
-	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
-	..setLevel(4, false)
+	makeMainUnits()
 
 	if players[1].getController() != MAP_CONTROL_USER
 		SetPlayerAllianceBJ(players[0], ALLIANCE_SHARED_CONTROL, true, players[1])

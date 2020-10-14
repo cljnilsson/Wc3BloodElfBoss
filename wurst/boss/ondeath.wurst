@@ -1,0 +1,33 @@
+package ondeath
+
+import ClosureEvents
+import playerhelper
+import unithelper
+import main
+
+int deathCount = 0
+
+init
+	EventListener.add(EVENT_PLAYER_UNIT_DEATH) ->
+		let u = GetTriggerUnit()
+		let o = u.getOwner()
+		if o == players[0] or o == players[1]
+			deathCount++
+			
+			// Player death
+			print("reset!")
+
+			if players[1].getController() != MAP_CONTROL_USER
+				players[0].addGold(2)
+			else
+				players[0].addGold(1)
+				players[1].addGold(1)
+			
+			players[0].removeAllunits()
+			players[1].removeAllunits()
+
+			makeMainUnits()
+
+		else if o == Player(PLAYER_NEUTRAL_AGGRESSIVE)
+			// Boss dies
+			print("boss is dead!")
