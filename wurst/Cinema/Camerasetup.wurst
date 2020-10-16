@@ -1,6 +1,9 @@
 package Camerasetup
 
+import LinkedList
+
 player localPlayer = GetLocalPlayer()
+let f = new LinkedList<player>()
 
 public enum attribute
 	TARGET_DISTANCE
@@ -43,12 +46,14 @@ public function camerasetup.apply(player p, real duration)
 		CameraSetupApplyForceDuration(this, true, duration)
 
 public function camerasetup.apply(real duration)
-	if (players[0].isLocalPlayer())
-		CameraSetupApplyForceDuration(this, true, duration)
+	for p in f
+		if p.isLocalPlayer()
+			CameraSetupApplyForceDuration(this, true, duration)
 		
 public function camerasetup.setAttribute(attribute a, real value, real duration)
-	if (players[0].isLocalPlayer())
-		SetCameraField(a.a2cf(), value, duration)
+	for p in f
+		if p.isLocalPlayer()
+			SetCameraField(a.a2cf(), value, duration)
 
 public function camerasetup.setAttribute(attribute a, player p, real value, real duration)
 	if (p.isLocalPlayer())
@@ -59,3 +64,7 @@ public function camerasetup.getX() returns real
 
 public function camerasetup.getY() returns real
 	return CameraSetupGetDestPositionY(this)
+
+init
+	f.add(players[0])
+	f.add(players[1])

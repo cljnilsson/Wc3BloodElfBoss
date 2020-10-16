@@ -3,7 +3,8 @@ package ondeath
 import ClosureEvents
 import playerhelper
 import unithelper
-import main
+import cinema
+import ClosureTimers
 
 int deathCount = 0
 
@@ -13,7 +14,7 @@ init
 		let o = u.getOwner()
 		if o == players[0] or o == players[1]
 			deathCount++
-			
+
 			// Player death
 			print("reset!")
 
@@ -31,3 +32,7 @@ init
 		else if o == Player(PLAYER_NEUTRAL_AGGRESSIVE)
 			// Boss dies
 			print("boss is dead!")
+			Cinema.fadeOut(1)
+			doAfter(1) ->
+				CustomVictoryBJ(players[0], true, false )
+				CustomVictoryBJ(players[1], true, false )

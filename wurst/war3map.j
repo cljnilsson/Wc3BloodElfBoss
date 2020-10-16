@@ -119,6 +119,7 @@ globals
     unit                    gg_unit_ncop_0124          = null
     unit                    gg_unit_ncop_0126          = null
     destructable            gg_dest_LTe1_2576          = null
+    trigger                 gg_trg_Untitled_Trigger_001 = null
 endglobals
 
 function InitGlobals takes nothing returns nothing
@@ -257,7 +258,6 @@ function CreateUnitsForPlayer0 takes nothing returns nothing
     set gg_unit_Hddt_0060 = BlzCreateUnitWithSkin( p, 'Hddt', 5019.1, 7646.3, 49.459, 'Hddt' )
     set gg_unit_Hjnd_0061 = BlzCreateUnitWithSkin( p, 'Hjnd', 5321.3, 7652.2, 125.318, 'Hjnd' )
     set u = BlzCreateUnitWithSkin( p, 'ebal', -1870.9, 1758.0, 260.163, 'ebal' )
-    set u = BlzCreateUnitWithSkin( p, 'h001', -2659.6, 4911.2, 165.020, 'h001' )
 endfunction
 
 //===========================================================================
@@ -376,6 +376,7 @@ function CreateNeutralPassiveBuildings takes nothing returns nothing
     set gg_unit_ncop_0124 = BlzCreateUnitWithSkin( p, 'ncop', -576.0, 6400.0, 270.000, 'ncop' )
     set u = BlzCreateUnitWithSkin( p, 'ntn3', -96.0, 5536.0, 270.000, 'ntn3' )
     set gg_unit_ncop_0126 = BlzCreateUnitWithSkin( p, 'ncop', -128.0, 6720.0, 270.000, 'ncop' )
+    set u = BlzCreateUnitWithSkin( p, 'h001', -2659.6, 4911.2, 165.020, 'h001' )
     set gg_unit_ncop_0133 = BlzCreateUnitWithSkin( p, 'ncop', 15808.0, -10432.0, 270.000, 'ncop' )
 endfunction
 
@@ -633,6 +634,18 @@ endfunction
 function InitTrig_init takes nothing returns nothing
     set gg_trg_init = CreateTrigger(  )
     call TriggerAddAction( gg_trg_init, function Trig_init_Actions )
+endfunction
+
+//===========================================================================
+// Trigger: Untitled Trigger 001
+//===========================================================================
+function Trig_Untitled_Trigger_001_Actions takes nothing returns nothing
+endfunction
+
+//===========================================================================
+function InitTrig_Untitled_Trigger_001 takes nothing returns nothing
+    set gg_trg_Untitled_Trigger_001 = CreateTrigger(  )
+    call TriggerAddAction( gg_trg_Untitled_Trigger_001, function Trig_Untitled_Trigger_001_Actions )
 endfunction
 
 //===========================================================================
@@ -1134,6 +1147,7 @@ endfunction
 //===========================================================================
 function InitCustomTriggers takes nothing returns nothing
     call InitTrig_init(  )
+    call InitTrig_Untitled_Trigger_001(  )
     call InitTrig_ghostspawn(  )
     call InitTrig_music1(  )
     call InitTrig_music2(  )

@@ -1,6 +1,6 @@
 package cinemaHelpers
 
-force f = bj_FORCE_PLAYER[0]
+force f = CreateForce()
 location loc = GetRectCenter(GetPlayableMapRect())
 public sound lastSound
 public real lastDuration = 5
@@ -35,3 +35,7 @@ public function sound.length() returns real
 public function sound.start()
 	StartSound(this)
 	lastSound = this
+
+init
+	f.addPlayer(players[0])
+	f.addPlayer(players[1])

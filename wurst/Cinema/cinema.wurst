@@ -3,7 +3,7 @@ package cinema
 import TimerUtils
 import cinemaHelpers
 
-force f = bj_FORCE_PLAYER[0] //Defaults to only work on player 1
+force f = CreateForce() //Defaults to only work on player 1
 
 public colorA lastFilter = COLOR_BLACK
 
@@ -119,4 +119,8 @@ public class Cinema
                 fadeIn(0, lastFilter)
                 gg_snd_RollingThunder1.start()
             end)
-        end)
+		end)
+		
+init
+	f.addPlayer(players[0])
+	f.addPlayer(players[1])
