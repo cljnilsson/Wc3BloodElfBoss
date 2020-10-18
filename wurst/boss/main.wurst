@@ -18,10 +18,13 @@ class Boss
 	integer pcooldown = 0
 	boolean summoned = false
 
+	CallbackPeriodic cb1
+	CallbackPeriodic cb2
+
 	construct(unit u)
 		boss = u
 		pos = boss.getPos()
-	
+
 	private function update()
 		let mana = boss.getMana()
 
@@ -59,19 +62,23 @@ class Boss
 
 
 	function start()
-		reset()
-
-		doPeriodically(5) (CallbackPeriodic cb) ->
+		cb1 = doPeriodically(5) (CallbackPeriodic cb) ->
 			b.addMana(1)
 
-		doPeriodically(1) (CallbackPeriodic cb) ->
+		cb2 = doPeriodically(1) (CallbackPeriodic cb) ->
 			update()
 
 		let target = boss.getNearestEnemyUnit()
 		boss.issueTargetOrder("attack", target)
 		print("Targeting: " + target.getName())
 
-	private function reset()
+	function reset()
+		if cb1 != null
+			destroy cb1
+
+		if cb2 != null
+			destroy cb2
+
 		boss.setHP(boss.getMaxHP())
 		boss.setMana(0)
 		boss.setPos(pos)

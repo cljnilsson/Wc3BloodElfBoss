@@ -3,6 +3,8 @@ package temp
 import ClosureTimers
 import Camerasetup
 import cinemaHelpers
+import crystalaoe
+import undeadkiller
 
 function archerPosition()
 	let archer1 = gg_unit_nhea_0035
@@ -29,7 +31,6 @@ function archerPosition()
 			gg_unit_nhea_0037.setAnimation("stand ready")
 
 			doAfter(0.5) -> 
-				print(gg_unit_nbel_0044.getName())
 				gg_unit_nbel_0044.walk(gg_rct_3.getCenter())
 			doAfter(0.75) -> 
 				gg_unit_nbel_0043.walk(gg_rct_2.getCenter())
@@ -44,13 +45,13 @@ function actions()
 	vec3 loc
 	vec3 target
 
-    gg_cam_Camera_003.apply(0)
-    SetCameraFieldForPlayer(players[0], CAMERA_FIELD_ROTATION, 270.00, 20.00 )
-    GetTriggeringTrigger().disable()
-    kel.removeAbility('Aatk')
-    TriggerSleepAction( 0.50 )
+	gg_cam_Camera_003.apply(0)
+	gg_cam_Camera_003.setAttribute(attribute.ROTATION, 270, 20)
+	GetTriggeringTrigger().disable()
+	kel.removeAbility('Aatk')
+	TriggerSleepAction( 0.50 )
 	kel.issueImmediateOrder("stop")
-    TriggerSleepAction( 0.00 )
+	TriggerSleepAction( 0.00 )
 	kel.setAnimation("stand channel")
 
 	loc 		= kel.getPos().toVec3().add(0, 0, 160)
@@ -59,28 +60,29 @@ function actions()
 
 	TriggerSleepAction( 2.00 )
 
-	for int i = 0 to 1
-		udg_active[i] = false
-		udg_e[i].destr()
-		TriggerSleepAction(2.00)
+	destroy CrystalAoe.first
+	doAfter(2) -> 
+		destroy CrystalAoe.first
+		doAfter(2) -> 
+			destroy CrystalAoe.first
 
-    ConditionalTriggerExecute( gg_trg_trap_2 )
-    TriggerSleepAction( 4.00 )
-    CameraSetupApplyForPlayer( true, gg_cam_Camera_004, Player(0), 0 )
-    TriggerSleepAction( 1.00 )
-    udg_active[3] = false
-    udg_e[3].destr()
-    TriggerSleepAction( 1.00 )
-    udg_l[99].destr()
+	TriggerSleepAction( 2 )
+	ConditionalTriggerExecute( gg_trg_trap_2 )
+	TriggerSleepAction( 4.00 )
+	gg_cam_Camera_004.apply(0)
+	TriggerSleepAction( 1.00 )
+	destroy CrystalAoe.first
+	TriggerSleepAction( 1.00 )
+	udg_l[99].destr()
 	gg_unit_h000_0005.setTimedLife(0.01)
-    DisableTrigger( gg_trg_crystal_aoe )
-    DisableTrigger( gg_trg_undead_killer )
+	CrystalAoe.shutdown()
+	stopKillingUndead()
 	SetPlayerAllianceStateBJ(players[1], players[3], bj_ALLIANCE_UNALLIED )
 	TriggerSleepAction( 4.00 )
 	archerPosition()
-    TriggerSleepAction( 10.00 )
-	CameraSetupApplyForPlayer( true, gg_cam_Camera_001, Player(0), 0 )
-	
+	TriggerSleepAction( 10.00 )
+	gg_cam_Camera_001.apply(0)
+
 	let spawns = [gg_rct_catapultfire1, gg_rct_catapultfire2, gg_rct_catapultfire3]
 	let gotos  = [gg_rct_catapultfire1, gg_rct_catapultfire2, gg_rct_catapultfire3]
 	unit array wagons
@@ -88,8 +90,8 @@ function actions()
 	for int i = 0 to 2
 		wagons[i] = createUnit(Player(3), 'umtw', spawns[i].getCenter(), angle(90.00))
 		wagons[i].walk(gotos[i].getCenter())
-	
-    TriggerSleepAction( 5.00 )
+
+	TriggerSleepAction( 5.00 )
 	udg_wagons[0].issueTargetOrder("attack", gg_unit_narg_0040)
 	udg_wagons[1].issueTargetOrder("attack", gg_unit_narg_0040)
 	udg_wagons[2].issueTargetOrder("attack", gg_unit_narg_0051)

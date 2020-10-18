@@ -1,0 +1,21 @@
+package trap1
+
+import ClosureTimers
+import crystalaoe
+
+public function trap1()
+	SetUnitAnimation( gg_unit_hsor_0033, "stand channel" )
+	SetUnitAnimation( gg_unit_hsor_0031, "stand channel" )
+	doAfter(1) -> 
+		AddSpecialEffectLocBJ( GetRectCenter(gg_rct_crystalregion), "Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl" )
+		PlaySoundBJ( gg_snd_LightningBolt )
+		doAfter(0.3) -> 
+			AddSpecialEffect("war3mapImported\\MagicShield.mdx", gg_rct_crystalregion.getCenterX(), gg_rct_crystalregion.getCenterY())
+			let x = gg_rct_crystalregion.getCenterX()
+			let y = gg_rct_crystalregion.getCenterY()
+
+			for i = 0 to 3
+				new CrystalAoe(x, y)
+
+			CrystalAoe.enable()
+

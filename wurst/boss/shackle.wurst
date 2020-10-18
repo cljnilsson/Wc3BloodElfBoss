@@ -2,11 +2,13 @@ package shackle
 
 import HashMap
 import ClosureEvents
+import LinkedListModule
 
 public function unit.isShackled() returns boolean
 	return Shackle.hash.get(this) != null
 
 public class Shackle
+	use LinkedListModule
 	unit shackled
 	string shackleEffect = "Abilities\\Spells\\Human\\AerialShackles\\AerialShacklesTarget.mdl"
 	effect e
@@ -21,7 +23,8 @@ public class Shackle
 
 	ondestroy
 		hash.remove(shackled)
-		shackled.setPropWindow(shackled.getDefaultPropWindow())
+		if shackled != null
+			shackled.setPropWindow(shackled.getDefaultPropWindow())
 		e.destr()
 
 init

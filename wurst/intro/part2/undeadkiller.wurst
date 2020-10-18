@@ -1,0 +1,29 @@
+package undeadkiller
+
+import ClosureTimers
+
+trigger t
+
+public function stopKillingUndead()
+	t.destr()
+
+function conditions() returns boolean
+    return GetUnitTypeId(GetTriggerUnit()) == 'ugho'
+
+function actions()
+	effect ef
+	unit u = GetTriggerUnit()
+	u.setTimedLife(0.01)
+	ef = u.addEffect("Doodads\\Cinematic\\TownBurningFireEmitterBlue\\TownBurningFireEmitterBlue.mdl", "origin")
+	..setScale(0.25)
+
+	doAfter(2) -> 
+		DestroyEffectBJ(ef)
+
+//===========================================================================
+init
+    t = CreateTrigger()
+    TriggerRegisterEnterRectSimple(t, gg_rct_undead_killer )
+    TriggerAddCondition(t, Condition( function conditions ) )
+    TriggerAddAction(t, function actions )
+

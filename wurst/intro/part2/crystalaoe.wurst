@@ -1,0 +1,29 @@
+package crystalaoe
+
+import LinkedListModule
+import ClosureTimers
+
+CallbackPeriodic l
+
+public class CrystalAoe
+	use LinkedListModule
+
+	real yaw
+	effect e
+
+	construct(real x, real y)
+		yaw = Deg2Rad(90.00 * size)
+		e = AddSpecialEffect("Doodads\\Cinematic\\FrostTrapSide\\FrostTrapSide", x, y)
+		..setYaw(yaw)
+
+	ondestroy
+		e.destr()
+		
+	static function shutdown()
+		destroy l
+
+	static function enable()
+		l = doPeriodically(0.03) (CallbackPeriodic cb) ->
+			for e in CrystalAoe
+				e.yaw += 0.03 + (0.03 * (4 - CrystalAoe.size))
+				e.e.setYaw(e.yaw)

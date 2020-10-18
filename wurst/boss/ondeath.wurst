@@ -5,6 +5,9 @@ import playerhelper
 import unithelper
 import cinema
 import ClosureTimers
+import cinemaHelpers
+import shackle
+import main
 
 int deathCount = 0
 
@@ -12,7 +15,7 @@ init
 	EventListener.add(EVENT_PLAYER_UNIT_DEATH) ->
 		let u = GetTriggerUnit()
 		let o = u.getOwner()
-		if o == players[0] or o == players[1]
+		if (o == players[0] or o == players[1]) and IsUnitType(u, UNIT_TYPE_HERO)
 			deathCount++
 
 			// Player death
@@ -27,12 +30,31 @@ init
 			players[0].removeAllunits()
 			players[1].removeAllunits()
 
+			for s in Shackle
+				destroy s
+
+			BEBoss.reset()
+
 			makeMainUnits()
 
-		else if o == Player(PLAYER_NEUTRAL_AGGRESSIVE)
+			if deathCount == 1
+				doAfter(6) -> 
+					doAfter(5) -> 
+						'Uktl'.talk("Kel'thuzad", "Perhaps it would be wise to equip ourselves properly. I sense magical energies to the west.", 10)
+					'Uear'.talk("Arthas", "I underestimated him.. it wont happen again.", 5)
+				'Uktl'.talk("Kel'thuzad", "I managed to get us back to your side of the bridge.", 6)
+			else if deathCount == 2
+				doAfter(5) -> 	
+					'Uktl'.talk("Kel'thuzad", "You've merely started upon your path, meawhile the sun king has thousands of years of experience and a weapon that almost equals yours.", 14)
+				'Uear'.talk("Arthas", "Again? this is pitiful", 5)
+			else if deathCount == 3
+				doAfter(10) -> 
+					'Uktl'.talk("Kel'thuzad", "As he is the one creating this dimension, if he falls there is nothing to go back to as the bridge will be no more.", 12)
+				'Uear'.talk("Arthas", "When we finally defeat the elf, won't he just go back to his side of the bridge and regenerate like us?", 10)
+		else if o == Player(PLAYER_NEUTRAL_AGGRESSIVE) and IsUnitType(u, UNIT_TYPE_HERO)
 			// Boss dies
 			print("boss is dead!")
-			Cinema.fadeOut(1)
-			doAfter(1) ->
+			Cinema.fadeOut(2)
+			doAfter(2) ->
 				CustomVictoryBJ(players[0], true, false )
 				CustomVictoryBJ(players[1], true, false )

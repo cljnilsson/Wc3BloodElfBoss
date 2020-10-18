@@ -81,7 +81,7 @@ public class Cinema
         CinematicFadeBJ(bj_CINEFADETYPE_FADEIN, duration, "ReplaceableTextures\\CameraMasks\\Black_mask.blp", 0, 0, 0, 0)
 
     static function fadeIn(real duration, Filter f)
-        colorA color = f.convert()
+        let color = f.convert()
 
         CinematicFilterGenericBJ(duration, BLEND_MODE_MODULATE_2X, "ReplaceableTextures\\CameraMasks\\White_mask.blp", 0, 0, 0, 0, color.red.toReal(), color.green.toReal(), color.blue.toReal(), color.alpha.toReal() )
 

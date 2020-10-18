@@ -8,6 +8,7 @@ import scene
 import Camerasetup
 import playerhelper
 import unithelper
+import trap1
 
 unit king = gg_unit_Hssa_0059
 unit archer = gg_unit_Hjnd_0061
@@ -52,6 +53,17 @@ function startGame()
 
 	doAfter(1) -> 
 		Cinema.fadeIn(2)
+		doAfter(5) -> 
+			doAfter(5) -> 
+				doAfter(5) -> 
+					doAfter(15) -> 	
+						doAfter(5) -> 
+							'Uktl'.talk("Kel'thuzad", "I'm not so easily banished.", 5)
+						'Uear'.talk("Arthas", "Yet you stand with me.", 5)
+					'Uktl'.talk("Kel'thuzad", "It could be a mind bridge, a great way to seperate you from your forces. Although very few magi are capable of such, especially when their target wear saronite armor such as yours.", 15)
+				'Uear'.talk("Arthas", "This all seem very familar to me somehow.", 5)
+			'Uktl'.talk("Kel'thuzad", "I believe it is some sort of pocket dimension, my king.", 5)
+		'Uear'.talk("Arthas", "Hm, where are we?", 5)
 
 function throneRoomTalk()
 	let counter = Scene.current.counter
@@ -141,7 +153,6 @@ function throneRoomTalk()
 			king.talk("Shorel'aran.. old friend.",  4)
 		default
 			destroy Scene.current
-			print("End of throne scene!")
 			Cinema.fadeOut(1)
 			doAfter(1) -> 	
 				startGame()
@@ -159,6 +170,9 @@ function part4()
 			doAfter(2) -> 
 				Cinema.fadeOut(2)
 				StopMusic(true)
+				ClearMapMusic()
+				ClearMapMusicBJ()
+				EndThematicMusicBJ()
 				doAfter(2) ->
 					gg_cam_Camera_006.apply(0)
 					PlayMusic( gg_snd_Anduins_Theme)
@@ -167,18 +181,36 @@ function part4()
 						throneRoom.start()
 
 function part1()
-	gg_trg_start.execute()
+	BlzEnableTargetIndicator(false)
+	Cinema.on()
+	doAfter(6) -> 
+		Cinema.fadeIn(3)
+		gg_cam_Camera_001.apply(0)
+		gg_cam_Camera_001.setAttribute(attribute.TARGET_DISTANCE, 2900, 20)
+		gg_trg_civilian_spawner.enable()
+		doAfter(12) -> 
+			gg_trg_civilian_spawner.disable()
+			doAfter(5) -> 
+				ClearMapMusic()
+				StopMusicBJ(true)
+			doAfter(6) -> 		
+				gg_cam_Camera_002.apply(0)
+				gg_cam_Camera_002.setAttribute(attribute.TARGET_DISTANCE, 2000, 20)
+				doAfter(1) -> 
+					PlayMusic(gg_snd_Fire_Ash_And_Dust)
+					gg_trg_undead_spawner.enable()
+					trap1()
+					doAfter(10) -> 
+						ConditionalTriggerExecute( gg_trg_kel_joins )
 						
-init
-	//part1()
+public function cineInit()
+	PlayMusic(gg_snd_BloodElfTheme)
+	part1()
 	RealisticPrint.log("The following map is based on official lore, but is not perfectly accurate.")	
 	doAfter(6) -> 
 		RealisticPrint.log("Silvermoon, during Arthas' invasion.")
-		Cinema.fadeIn(0)
 
 	throneRoom = function throneRoomTalk.newScene()
-	doAfter(0) -> 
-		startGame()
 
 	CreateTrigger()
 	..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
@@ -190,3 +222,6 @@ init
 			GetTriggeringTrigger().destr()
 			doAfter(1) -> 
 				part4()
+
+public function gameInit()
+	startGame()

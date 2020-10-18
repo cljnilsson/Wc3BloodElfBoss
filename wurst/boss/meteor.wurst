@@ -18,13 +18,14 @@ public class Meteor
 			addEffect(projectile, pos).destr()
 
 			doAfter(0.25) -> 
-				let list = pos.getNearUnitsEx(100)
+				let list = pos.getNearUnitsEx(150)
 
 				addEffect(aoe, pos).destr()
 
 				for u in list
 					let o = u.getOwner()
 					if o == players[0] or o == players[1]
+						print("damage " + u.getName())
 						u.addHP(-100)
 
 				destroy list
