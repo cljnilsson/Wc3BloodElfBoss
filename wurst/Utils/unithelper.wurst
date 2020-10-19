@@ -6,8 +6,17 @@ import LinkedList
 public function makeMainUnits()
 	createUnit(players[1], 'Uktl', gg_rct_start.getCenter(), angle(0))
 	..setLevel(4, false)
+	..selectSkill('A003')
+	..selectSkill('A002')
+	..selectSkill('A005')
+	..selectSkill('AUfn')
+
 	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
 	..setLevel(4, false)
+	..selectSkill('AUdc')
+	..selectSkill('A000')
+	..selectSkill('A001')
+	..selectSkill('A006')
 
 public function group.toLinkedList() returns LinkedList<unit>
 	let list = new LinkedList<unit>()
@@ -28,7 +37,7 @@ public function vec2.getNearEnemyUnitsEx(real r, unit source) returns LinkedList
 		if u.getOwner() == o
 			g.removeUnit(u)
 			
-	return g.toLinkedList()
+	return g.toLinkedList()  
 
 public function vec2.getNearUnitsEx(real r) returns LinkedList<unit>
 	let l = Location(this.x, this.y)

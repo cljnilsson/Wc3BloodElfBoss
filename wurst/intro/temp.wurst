@@ -15,15 +15,14 @@ function archerPosition()
 	archer1.walk(gg_rct_archerpos1.getCenter())
 	archer2.walk(gg_rct_archerpos2.getCenter())
 
-	archer1.setAnimation("birth")
 	doAfter(1.69) -> 
 		ResetUnitAnimation(archer1)
 
 	doAfter(2) -> 
-		archer1.setFacing(angle(270))
-		archer2.setFacing(angle(270))
-		gg_unit_nhea_0034.setFacing(angle(270))
-		gg_unit_nhea_0037.setFacing(angle(270))
+		archer1.setFacing(angle(4.71239))
+		archer2.setFacing(angle(4.71239))
+		gg_unit_nhea_0034.setFacing(angle(4.71239))
+		gg_unit_nhea_0037.setFacing(angle(4.71239))
 		doAfter(1) -> 
 			gg_unit_nhea_0034.setAnimation("stand ready")
 			gg_unit_nhea_0035.setAnimation("stand ready")
@@ -66,7 +65,7 @@ function actions()
 		doAfter(2) -> 
 			destroy CrystalAoe.first
 
-	TriggerSleepAction( 2 )
+	TriggerSleepAction( 4 )
 	ConditionalTriggerExecute( gg_trg_trap_2 )
 	TriggerSleepAction( 4.00 )
 	gg_cam_Camera_004.apply(0)

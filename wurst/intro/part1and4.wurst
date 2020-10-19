@@ -45,11 +45,16 @@ function startGame()
 
 	makeMainUnits()
 
+	SetCameraBoundsToRectForPlayerBJ(players[0], gg_rct_lobby)
+	SetCameraBoundsToRectForPlayerBJ(players[1], gg_rct_lobby)
+
 	if players[1].getController() != MAP_CONTROL_USER
 		SetPlayerAllianceBJ(players[0], ALLIANCE_SHARED_CONTROL, true, players[1])
 		SetPlayerAllianceBJ(players[1], ALLIANCE_SHARED_CONTROL, true, players[0])
-
-	players[0].panCameraTo(gg_rct_start.getCenter())
+	
+	doAfter(0) -> 		
+		players[0].setCameraPosition(gg_rct_start.getCenter())
+		players[1].setCameraPosition(gg_rct_start.getCenter())
 
 	doAfter(1) -> 
 		Cinema.fadeIn(2)

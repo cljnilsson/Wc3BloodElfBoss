@@ -70,7 +70,6 @@ class Boss
 
 		let target = boss.getNearestEnemyUnit()
 		boss.issueTargetOrder("attack", target)
-		print("Targeting: " + target.getName())
 
 	function reset()
 		if cb1 != null

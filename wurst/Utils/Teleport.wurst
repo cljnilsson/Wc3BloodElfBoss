@@ -119,5 +119,11 @@ init
 				u.setLife(u.getMaxHP())
 				u.setMana(u.getMaxMana())
 
+				SetCameraBoundsToRectForPlayerBJ(players[0], gg_rct_Region_027)
+				SetCameraBoundsToRectForPlayerBJ(players[1], gg_rct_Region_027)
+				doAfter(0) -> 		
+					players[0].setCameraPosition(u.getPos())
+					players[1].setCameraPosition(u.getPos())
+
 				BEBoss.start()
 

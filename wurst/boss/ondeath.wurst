@@ -37,6 +37,12 @@ init
 
 			makeMainUnits()
 
+			SetCameraBoundsToRectForPlayerBJ(players[0], gg_rct_lobby)
+			SetCameraBoundsToRectForPlayerBJ(players[1], gg_rct_lobby)
+			doAfter(0) -> 		
+				players[0].setCameraPosition(gg_rct_start.getCenter())
+				players[1].setCameraPosition(gg_rct_start.getCenter())
+
 			if deathCount == 1
 				doAfter(6) -> 
 					doAfter(5) -> 
