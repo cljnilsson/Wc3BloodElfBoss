@@ -14,7 +14,7 @@ public function makeMainUnits()
 	createUnit(players[0], 'Uear', gg_rct_start.getCenter(), angle(0))
 	..setLevel(4, false)
 	..selectSkill('AUdc')
-	..selectSkill('A000')
+	..selectSkill('AUdp')
 	..selectSkill('A001')
 	..selectSkill('A006')
 

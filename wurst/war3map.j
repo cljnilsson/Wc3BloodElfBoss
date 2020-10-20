@@ -198,6 +198,7 @@ function CreateUnitsForPlayer0 takes nothing returns nothing
     local trigger t
     local real life
 
+    set u = BlzCreateUnitWithSkin( p, 'Hssa', 8186.5, 259.8, 124.699, 'Hssa' )
     set u = BlzCreateUnitWithSkin( p, 'hspt', 5954.0, 7084.7, 180.000, 'hspt' )
     set gg_unit_hsor_0031 = BlzCreateUnitWithSkin( p, 'hsor', 803.5, -1812.5, 270.000, 'hsor' )
     set gg_unit_hsor_0033 = BlzCreateUnitWithSkin( p, 'hsor', 1104.1, -1836.6, 270.000, 'hsor' )
@@ -443,7 +444,7 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_TARGET_DISTANCE, 2554.5, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_ROLL, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0 )
-    call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_FARZ, 3000.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_FARZ, 4000.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_NEARZ, 16.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_002, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0 )
@@ -555,7 +556,7 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_TARGET_DISTANCE, 1362.8, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_ROLL, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0 )
-    call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_FARZ, 5000.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_FARZ, 8000.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_NEARZ, 16.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_009, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0 )
@@ -569,7 +570,7 @@ function CreateCameras takes nothing returns nothing
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_TARGET_DISTANCE, 1362.8, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_ROLL, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_FIELD_OF_VIEW, 70.0, 0.0 )
-    call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_FARZ, 5000.0, 0.0 )
+    call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_FARZ, 8000.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_NEARZ, 16.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_LOCAL_PITCH, 0.0, 0.0 )
     call CameraSetupSetField( gg_cam_Camera_010, CAMERA_FIELD_LOCAL_YAW, 0.0, 0.0 )
@@ -983,17 +984,36 @@ function InitCustomPlayerSlots takes nothing returns nothing
 
     // Player 0
     call SetPlayerStartLocation( Player(0), 0 )
+    call ForcePlayerStartLocation( Player(0), 0 )
     call SetPlayerColor( Player(0), ConvertPlayerColor(0) )
-    call SetPlayerRacePreference( Player(0), RACE_PREF_HUMAN )
+    call SetPlayerRacePreference( Player(0), RACE_PREF_UNDEAD )
     call SetPlayerRaceSelectable( Player(0), true )
     call SetPlayerController( Player(0), MAP_CONTROL_USER )
+
+    // Player 1
+    call SetPlayerStartLocation( Player(1), 1 )
+    call ForcePlayerStartLocation( Player(1), 1 )
+    call SetPlayerColor( Player(1), ConvertPlayerColor(1) )
+    call SetPlayerRacePreference( Player(1), RACE_PREF_UNDEAD )
+    call SetPlayerRaceSelectable( Player(1), true )
+    call SetPlayerController( Player(1), MAP_CONTROL_USER )
 
 endfunction
 
 function InitCustomTeams takes nothing returns nothing
     // Force: TRIGSTR_002
     call SetPlayerTeam( Player(0), 0 )
+    call SetPlayerTeam( Player(1), 0 )
 
+endfunction
+
+function InitAllyPriorities takes nothing returns nothing
+
+    call SetStartLocPrioCount( 0, 1 )
+    call SetStartLocPrio( 0, 0, 1, MAP_LOC_PRIO_HIGH )
+
+    call SetStartLocPrioCount( 1, 1 )
+    call SetStartLocPrio( 1, 0, 0, MAP_LOC_PRIO_HIGH )
 endfunction
 
 //***************************************************************************
@@ -1033,15 +1053,18 @@ endfunction
 function config takes nothing returns nothing
     call SetMapName( "TRIGSTR_088" )
     call SetMapDescription( "" )
-    call SetPlayers( 1 )
-    call SetTeams( 1 )
-    call SetGamePlacement( MAP_PLACEMENT_USE_MAP_SETTINGS )
+    call SetPlayers( 2 )
+    call SetTeams( 2 )
+    call SetGamePlacement( MAP_PLACEMENT_TEAMS_TOGETHER )
 
     call DefineStartLocation( 0, -384.0, 5120.0 )
+    call DefineStartLocation( 1, -384.0, 5120.0 )
 
     // Player setup
     call InitCustomPlayerSlots(  )
     call SetPlayerSlotAvailable( Player(0), MAP_CONTROL_USER )
+    call SetPlayerSlotAvailable( Player(1), MAP_CONTROL_USER )
     call InitGenericPlayerSlots(  )
+    call InitAllyPriorities(  )
 endfunction
 

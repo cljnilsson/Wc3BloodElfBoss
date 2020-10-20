@@ -29,7 +29,8 @@ class Teleport
 		reverse = setupPortal(t, f)
 
 	static function filter() returns boolean
-		return GetFilterUnit().getOwner() == players[0]
+		let o = GetFilterUnit().getOwner()
+		return o == players[0] or o == players[1] // should be changed in other maps possibly
 
 	function setupPortal(vec2 f, vec2 t) returns CallbackPeriodic
 		let cb =  doPeriodically(0.03) (CallbackPeriodic cb) ->
@@ -40,7 +41,7 @@ class Teleport
 
 				for unit u in g
 					u.setPos(t.polarOffset(GetRandomInt(0, 360).asAngleRadians(), 150))
-					players[0].panCameraToTimed(u.getPos(), 0)
+					players[0].panCameraToTimed(u.getPos(), 0.5)
 				
 				g.destr()
 

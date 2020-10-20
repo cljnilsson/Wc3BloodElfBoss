@@ -25,7 +25,6 @@ public class Meteor
 				for u in list
 					let o = u.getOwner()
 					if o == players[0] or o == players[1]
-						print("damage " + u.getName())
 						u.addHP(-100)
 
 				destroy list

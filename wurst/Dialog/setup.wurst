@@ -12,12 +12,10 @@ function removeDialog()
 	dialogues[0].removePlayer(players[1])
 
 function watch()
-	print("bababababaa1")
 	removeDialog()
 	cineInit()
 
 function play()
-	print("bababababaa2")
 	removeDialog()
 	gameInit()
 

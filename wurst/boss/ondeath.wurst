@@ -8,6 +8,7 @@ import ClosureTimers
 import cinemaHelpers
 import shackle
 import main
+import Teleport
 
 int deathCount = 0
 
@@ -19,7 +20,7 @@ init
 			deathCount++
 
 			// Player death
-			print("reset!")
+			t.enable()
 
 			if players[1].getController() != MAP_CONTROL_USER
 				players[0].addGold(2)
@@ -59,7 +60,6 @@ init
 				'Uear'.talk("Arthas", "When we finally defeat the elf, won't he just go back to his side of the bridge and regenerate like us?", 10)
 		else if o == Player(PLAYER_NEUTRAL_AGGRESSIVE) and IsUnitType(u, UNIT_TYPE_HERO)
 			// Boss dies
-			print("boss is dead!")
 			Cinema.fadeOut(2)
 			doAfter(2) ->
 				CustomVictoryBJ(players[0], true, false )

@@ -34,10 +34,8 @@ constant id = 'AUfn'
 init
 	EventListener.add(EVENT_PLAYER_UNIT_SPELL_EFFECT) ->
 		if GetSpellAbilityId() == id
-			print("ice spell was cast")
 			let spell = Shackle.hash.get(GetSpellTargetUnit())
 			if spell != null
-				print("unit is indeed snared!")
 				destroy spell
 			else
 				print("unit is not snared!")

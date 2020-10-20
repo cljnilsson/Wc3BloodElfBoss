@@ -12,9 +12,9 @@ init
 		let p 		= caster.getOwner()
 
 		forUnitsInRange(pos, 900) (unit u) ->
-			if(u.getOwner().isAllyOf(p) and u.hasAbility(id) and u.getHP() < u.getMaxHP())
+			if u.getOwner().isAllyOf(p) and u.hasAbility(id) and u.getHP() < u.getMaxHP()
 				let heal =  u.getMaxHP() * 0.05
 
 				u.setHP(u.getHP() + heal)
-				u.addEffect("Abilities\\Spells\\Orc\\EtherealForm\\SpiritWalkerChange.mdl", "origin").destr()
- 
+				print("should!")
+				u.addEffect("Abilities\\Spells\\Items\\AIam\\AIamTarget.mdl", "origin")

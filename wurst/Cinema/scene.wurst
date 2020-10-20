@@ -46,13 +46,10 @@ public class Scene
 		instance.counter++
 
 		if lastSound == null
-			print("Should happen " + lastDuration.toString())
 			duration = lastDuration
 		else if lastDuration == 0
-			print("Should NOT happen")
 			duration = lastSound.length()
 		else
-			print("Last durating was 0, using default duration (3s)")
 			duration = 3
 		
 		instance.time = t
